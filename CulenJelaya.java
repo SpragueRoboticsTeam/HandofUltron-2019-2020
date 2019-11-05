@@ -14,16 +14,17 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="BosephJyers", group="Linear Opmode")
-public class BosephJyers extends LinearOpMode{
+@TeleOp(name="CulenJelaya", group="Linear Opmode")
+public class CulenJelaya extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor left = null;
     private DcMotor right = null;
     private DcMotor front = null;
     private DcMotor back = null;
+    private ColorSensor platformCS = null;
     private ColorSensor frontCS = null;
-    private ColorSensor downCS = null;
+    private DistanceSensor platformDS = null;
     private DistanceSensor frontDS = null;
     private Servo leftServo = null;
     private Servo rightServo = null;
@@ -42,9 +43,10 @@ public class BosephJyers extends LinearOpMode{
         right = hardwareMap.get(DcMotor.class, "R");
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
-        frontCS = hardwareMap.get(ColorSensor.class, "FCS");
-        //downCS = hardwareMap.get(ColorSensor.class, "DCS");
+        platformCS = hardwareMap.get(ColorSensor.class, "PCS");
+        frontCS = hardwareMap.get(ColorSensor.class, "DCS");
         frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
+        platformDS = hardwareMap.get(DistanceSensor.class, "PCS");
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
 
@@ -67,35 +69,32 @@ public class BosephJyers extends LinearOpMode{
         while (opModeIsActive()) {
 
             Color.RGBToHSV((int) (frontCS.red() * SCALE_FACTOR), (int) (frontCS.green() * SCALE_FACTOR), (int) (frontCS.blue() * SCALE_FACTOR), HSVF);
-
-            //Maybe make left stick y greater than +-0.5 and same with x so it won't not do x
-            if(gamepad1.left_stick_y != 0 ||gamepad1.left_stick_x != 0) {
+            
+            if(gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
                 left.setPower(gamepad1.left_stick_y);
                 right.setPower(gamepad1.left_stick_y);
                 front.setPower(-gamepad1.left_stick_x);
                 back.setPower(-gamepad1.left_stick_x);
             }
-            /*else if(gamepad1.left_stick_x != 0) {
-            }*/
             else if(gamepad1.right_stick_x != 0) {
                 left.setPower(gamepad1.right_stick_x);
                 right.setPower(-gamepad1.right_stick_x);
                 front.setPower(-gamepad1.right_stick_x);
                 back.setPower(gamepad1.right_stick_x);
+            } else {
+                left.setPower(0);
+                right.setPower(0);
+                front.setPower(0);
+                back.setPower(0);
             }
-            else if(gamepad1.a) {
+            
+            if(gamepad1.a) {
                 leftServo.setPosition(1);
                 rightServo.setPosition(0);
             }
             else if(gamepad1.y) {
                 leftServo.setPosition(0);
                 rightServo.setPosition(1);
-            }
-            else {
-                left.setPower(0);
-                right.setPower(0);
-                front.setPower(0);
-                back.setPower(0);
             }
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
