@@ -9,7 +9,11 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
+class Legos {
+    public float HSV[] = {0f, 0f, 0f};
+    public boolean isThere = true;
+    public float distance = 0;
+}
 
 @Autonomous
 public class BlueLeft extends LinearOpMode {
@@ -20,8 +24,10 @@ public class BlueLeft extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.75;
+    static final double     DRIVE_SPEED             = 1.0;
     static final double     TURN_SPEED              = 0.5;
+
+
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -29,16 +35,18 @@ public class BlueLeft extends LinearOpMode {
     private DcMotor back = null;
     private ColorSensor frontCS = null;
     private DistanceSensor frontDS = null;
-    private ColorSensor downCS = null;
+    private ColorSensor platCS = null;
+    private DistanceSensor platDS = null;
     private Servo leftServo = null;
     private Servo rightServo = null;
+    private DcMotor claw = null;
+    private DcMotor lift = null;
 
     public float HSVF[] = {0f, 0f, 0f};
     public float HSVD[] = {0f, 0f, 0f};
 
     final double SCALE_FACTOR = 255;
 
-    @Override
     public void runOpMode() {
 
         left = hardwareMap.get(DcMotor.class, "L");
@@ -46,10 +54,13 @@ public class BlueLeft extends LinearOpMode {
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
         frontCS = hardwareMap.get(ColorSensor.class, "FCS");
-        //frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
-        //downCS  = hardwareMap.get(ColorSensor.class, "DCS");
+        frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
+        //platCS  = hardwareMap.get(ColorSensor.class, "PCS");
+        //platDS = hardwareMap.get(DistanceSensor.class, "PDS");
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
+        claw = hardwareMap.get(DcMotor.class, "C");
+        lift = hardwareMap.get(DcMotor.class, "L");
 
         left.setDirection(DcMotor.Direction.FORWARD);
         right.setDirection(DcMotor.Direction.REVERSE);
@@ -81,38 +92,75 @@ public class BlueLeft extends LinearOpMode {
                 back.getCurrentPosition());
         telemetry.update();
 
+        leftServo.setPosition(0.0);
+        rightServo.setPosition(1.0);
+
         waitForStart();
 
-        encoderDrive(0.25, 2, 2, 0, 0);
-        encoderDrive(DRIVE_SPEED,  0, 0,24,  24);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED,   29, 29, 0, 0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+            left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            claw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            claw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+            telemetry.addData("Path0",  "Starting at %7d :%7d",
+                    left.getCurrentPosition(),
+                    right.getCurrentPosition(),
+                    front.getCurrentPosition(),
+                    back.getCurrentPosition());
+            telemetry.update();
+
+        waitForStart();
+
+        encoderDrive(DRIVE_SPEED,   0, 0, 15, 15);  // S2: Forward 29 Inches and Left 24
+        encoderDrive(DRIVE_SPEED,   29.75, 29.75, 0, 0);
 
         leftServo.setPosition(1.0);
         rightServo.setPosition(0.0);
         sleep(1000);
 
-        encoderDrive(1.0, -76, -76 ,0, 0);
+        encoderDrive(1.0, -32, -32, 0, 0); // S4: Backwards 25 inches at full speed
+        encoderDrive(0.25, 0, 0, 1, 0); // S5: Rotate to correct rotation
 
         leftServo.setPosition(0);
         rightServo.setPosition(1);
 
-        sleep(2000);
+        sleep(400);
 
-        encoderDrive(DRIVE_SPEED, 0, 0, -50, -50);
+        encoderDrive(1.0, 0, 0, -76, -76); // S6: Drive 50 inches to the right for team bridge
+        encoderDrive(1.0, 22, 22, 0, 0); // S7: Drive 24 inches forward towards legos
+        encoderDrive(1.0, -9, 9, -9, 9); // S8: Rotate 90 degrees to face legos
+        claw
+        //(1.0,  );
+
+
+
+
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
+
+        //Red < 50 Distance < 4
+
     }
 
-    /*
-     *  Method to perfmorm a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Move runs out of time
-     *  3) Driver stops the opmode running.
-     */
+        /*
+         *  Method to perfmorm a relative move, based on encoder counts.
+         *  Encoders are not reset as the move is based on the current position.
+         *  Move will stop if any of three conditions occur:
+         *  1) Move gets to the desired position
+         *  2) Move runs out of time
+         *  3) Driver stops the opmode running.
+         */
     public void encoderDrive(double speed,
                              double leftInches, double rightInches, double frontInches, double backInches) {
         int newLeftTarget;
@@ -183,6 +231,35 @@ public class BlueLeft extends LinearOpMode {
         }
     }
 
+    public void encoderClawlift(double speed,
+                             double clawInches, double liftInches) {
+        int newClawTarget;
+        int newLiftTarget;
+
+        newClawTarget = claw.getCurrentPosition() + (int)(clawInches * COUNTS_PER_INCH);
+        newLiftTarget = lift.getCurrentPosition() + (int)(liftInches * COUNTS_PER_INCH);
+
+        claw.setTargetPosition(newClawTarget);
+        lift.setTargetPosition(newLiftTarget);
+
+        claw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        claw.setPower(Math.abs(speed));
+        lift.setPower(Math.abs(speed));
+
+        while (opModeIsActive() &&
+
+                (claw.isBusy() || lift.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.update();
+        }
+
+        claw.setPower(0);
+        lift.setPower(0);
+
+    }
     public void encoderTurn (  double speed, double angle) {
         telemetry.addData("Degrees: ", angle);
 
