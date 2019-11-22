@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+
 @TeleOp(name="CulenJelaya", group="Linear Opmode")
 public class CulenJelaya extends LinearOpMode{
 
@@ -22,9 +23,11 @@ public class CulenJelaya extends LinearOpMode{
     private DcMotor right = null;
     private DcMotor front = null;
     private DcMotor back = null;
-    private ColorSensor platformCS = null;
+    private DcMotor claw = null;
+    private DcMotor lift = null;
+   // private ColorSensor platformCS = null;
     private ColorSensor frontCS = null;
-    private DistanceSensor platformDS = null;
+   // private DistanceSensor platformDS = null;
     private DistanceSensor frontDS = null;
     private Servo leftServo = null;
     private Servo rightServo = null;
@@ -43,10 +46,13 @@ public class CulenJelaya extends LinearOpMode{
         right = hardwareMap.get(DcMotor.class, "R");
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
-        platformCS = hardwareMap.get(ColorSensor.class, "PCS");
-        frontCS = hardwareMap.get(ColorSensor.class, "DCS");
+        claw = hardwareMap.get(DcMotor.class, "C");
+        lift = hardwareMap.get(DcMotor.class, "S");
+
+        //platformCS = hardwareMap.get(ColorSensor.class, "PCS");
+        frontCS = hardwareMap.get(ColorSensor.class, "FCS");
         frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
-        platformDS = hardwareMap.get(DistanceSensor.class, "PCS");
+       // platformDS = hardwareMap.get(DistanceSensor.class, "PCS");
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
 
@@ -54,11 +60,17 @@ public class CulenJelaya extends LinearOpMode{
         right.setDirection(DcMotor.Direction.FORWARD);
         front.setDirection(DcMotor.Direction.FORWARD);
         back.setDirection(DcMotor.Direction.REVERSE);
+        claw.setDirection(DcMotor.Direction.FORWARD);
+        lift.setDirection(DcMotor.Direction.REVERSE);   //Parker Was here. Don't delete.
 
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //   do NOT uncomment    lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftServo.setPosition(0);
         rightServo.setPosition(1);
@@ -69,7 +81,7 @@ public class CulenJelaya extends LinearOpMode{
         while (opModeIsActive()) {
 
             Color.RGBToHSV((int) (frontCS.red() * SCALE_FACTOR), (int) (frontCS.green() * SCALE_FACTOR), (int) (frontCS.blue() * SCALE_FACTOR), HSVF);
-            
+
             if(gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
                 left.setPower(gamepad1.left_stick_y);
                 right.setPower(gamepad1.left_stick_y);
@@ -81,23 +93,44 @@ public class CulenJelaya extends LinearOpMode{
                 right.setPower(-gamepad1.right_stick_x);
                 front.setPower(-gamepad1.right_stick_x);
                 back.setPower(gamepad1.right_stick_x);
-            } else {
+            }
+            else if(gamepad1.y) {
+                leftServo.setPosition(1);
+                rightServo.setPosition(0);
+            }
+            else if(gamepad1.a) {
+                leftServo.setPosition(0);
+                rightServo.setPosition(1);
+            }
+            else{
                 left.setPower(0);
                 right.setPower(0);
                 front.setPower(0);
                 back.setPower(0);
             }
-            
-            if(gamepad1.a) {
-                leftServo.setPosition(1);
-                rightServo.setPosition(0);
+
+            if(gamepad1.dpad_up && lift.getCurrentPosition() < 27700){//
+                lift.setPower(1);
             }
-            else if(gamepad1.y) {
-                leftServo.setPosition(0);
-                rightServo.setPosition(1);
+            else if(gamepad1.dpad_down && lift.getCurrentPosition() > -1){//
+                lift.setPower(-1);
+            }
+            else{
+                lift.setPower(0);
+            }
+
+            if(gamepad1.right_trigger > 0){
+                claw.setPower(0.35);
+            }
+            else if(gamepad1.left_trigger > 0){
+                claw.setPower(-0.35);
+            }
+            else{
+                claw.setPower(0);
             }
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData( "lift: " , lift.getCurrentPosition());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", gamepad1.left_stick_y, gamepad1.right_stick_x);
             telemetry.addData("Distance", frontDS.getDistance(DistanceUnit.INCH));
             telemetry.addData("Color", frontCS.blue());
