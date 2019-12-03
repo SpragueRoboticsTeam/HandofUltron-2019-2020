@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -15,8 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-@TeleOp(name="CulenJelaya", group="Linear Opmode")
-public class CulenJelaya extends LinearOpMode{
+@TeleOp
+public class CulenJelaya_OBJ extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor left = null;
@@ -42,12 +41,14 @@ public class CulenJelaya extends LinearOpMode{
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        left = hardwareMap.get(DcMotor.class, "L");
-        right = hardwareMap.get(DcMotor.class, "R");
-        front = hardwareMap.get(DcMotor.class, "F");
-        back = hardwareMap.get(DcMotor.class, "B");
+        left = hardwareMap.get(DcMotor.class, "B");
+        right = hardwareMap.get(DcMotor.class, "F");
+        front = hardwareMap.get(DcMotor.class, "L");
+        back = hardwareMap.get(DcMotor.class, "R");
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
+        //FRBl
+        //RBLF
 
         //platformCS = hardwareMap.get(ColorSensor.class, "PCS");
         frontCS = hardwareMap.get(ColorSensor.class, "FCS");
@@ -56,22 +57,24 @@ public class CulenJelaya extends LinearOpMode{
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
 
-        left.setDirection(DcMotor.Direction.REVERSE);
-        right.setDirection(DcMotor.Direction.FORWARD);
-        front.setDirection(DcMotor.Direction.FORWARD);
-        back.setDirection(DcMotor.Direction.REVERSE);
+        left.setDirection(DcMotor.Direction.FORWARD);
+        right.setDirection(DcMotor.Direction.REVERSE);
+        front.setDirection(DcMotor.Direction.REVERSE);
+        back.setDirection(DcMotor.Direction.FORWARD);
         claw.setDirection(DcMotor.Direction.FORWARD);
-        lift.setDirection(DcMotor.Direction.REVERSE);   //Parker Was here. Don't delete.
+        lift.setDirection(DcMotor.Direction.REVERSE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        //   do NOT uncomment    lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        lift.setTargetPosition(0);
+        //lift.setPower(.5);
+        
         leftServo.setPosition(0);
         rightServo.setPosition(1);
 
@@ -89,16 +92,16 @@ public class CulenJelaya extends LinearOpMode{
                 back.setPower(-gamepad1.left_stick_x);
             }
             else if(gamepad1.right_stick_x != 0) {
-                left.setPower(gamepad1.right_stick_x);
-                right.setPower(-gamepad1.right_stick_x);
-                front.setPower(-gamepad1.right_stick_x);
-                back.setPower(gamepad1.right_stick_x);
+                left.setPower(-gamepad1.right_stick_x);
+                right.setPower(gamepad1.right_stick_x);
+                front.setPower(gamepad1.right_stick_x);
+                back.setPower(-gamepad1.right_stick_x);
             }
-            else if(gamepad1.y) {
+            else if(gamepad2.left_bumper) {
                 leftServo.setPosition(1);
                 rightServo.setPosition(0);
             }
-            else if(gamepad1.a) {
+            else if(gamepad2.right_bumper) {
                 leftServo.setPosition(0);
                 rightServo.setPosition(1);
             }
@@ -109,20 +112,20 @@ public class CulenJelaya extends LinearOpMode{
                 back.setPower(0);
             }
 
-            if(gamepad1.dpad_up && lift.getCurrentPosition() < 27700){//
+            if(gamepad2.left_stick_y < 0 && lift.getCurrentPosition() < 27000){//
                 lift.setPower(1);
             }
-            else if(gamepad1.dpad_down && lift.getCurrentPosition() > -1){//
+            else if(gamepad2.left_stick_y > 0 && lift.getCurrentPosition() > -1){//
                 lift.setPower(-1);
             }
             else{
                 lift.setPower(0);
             }
 
-            if(gamepad1.right_trigger > 0){
+            if(gamepad2.y){
                 claw.setPower(0.35);
             }
-            else if(gamepad1.left_trigger > 0){
+            else if(gamepad2.a){
                 claw.setPower(-0.35);
             }
             else{
