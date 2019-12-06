@@ -87,10 +87,10 @@ public class BlueRight_OBJ extends LinearOpMode {
         waitForStart();
 //***********************************************************************************************************
 //***********************************************************************************************************
-//***********************************************************************************************************
+//*******Blue Right****************************************************************************************************
 
         ClawDown(true);
-        encoderDrive(DRIVE_SPEED,   28, 28, 0, 0);  // drive to blocks
+        encoderDrive(DRIVE_SPEED,   30.5, 32, 0, 0);  // drive to blocks
         //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
         Color.RGBToHSV((int) (platCS.red() * SCALE_FACTOR), (int) (platCS.green() * SCALE_FACTOR), (int) (platCS.blue() * SCALE_FACTOR), HSVD);
         telemetry.addData("Red: ",platCS.red());
@@ -101,27 +101,27 @@ public class BlueRight_OBJ extends LinearOpMode {
         rightServo.setPosition(0.0);
         sleep(500);
 
-        encoderDrive(DRIVE_SPEED, -15,-15 ,0, 0);
-        encoderTurn(DRIVE_SPEED, 25);
+        encoderDrive(DRIVE_SPEED, -12,-13 ,0, 0);
+        //encoderTurn(DRIVE_SPEED, 25);
 
-        encoderDrive(DRIVE_SPEED, 0,0 ,40, 40); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,35.5, 35); //+ distance --> left
 
         leftServo.setPosition(0.0); //1st up
         rightServo.setPosition(1.0);
         sleep(300);
 
-        encoderDrive(DRIVE_SPEED, -5,-5,0, 0);
-       // encoderTurn(DRIVE_SPEED, 10);
-        encoderDrive(DRIVE_SPEED, 0,0 ,-47, -47); //- distance --> right
+        encoderDrive(DRIVE_SPEED, -5,-6,0, 0);
         //encoderTurn(DRIVE_SPEED, 10);
+        encoderDrive(DRIVE_SPEED, 0,0 ,-45, -45); //- distance --> right
+        encoderTurn(DRIVE_SPEED, 25);
 
-        encoderDrive(DRIVE_SPEED, 14, 14,0, 0);
+        encoderDrive(DRIVE_SPEED, 14, 15,0, 0);
 
         leftServo.setPosition(1.0);//2nd down
         rightServo.setPosition(0.0);
         sleep(500);
 
-        encoderDrive(DRIVE_SPEED, -10,-10 ,0, 0);
+        encoderDrive(DRIVE_SPEED, -10,-11 ,0, 0);
         encoderDrive(DRIVE_SPEED, 0,0 ,52, 52); //+ distance --> left
         
         leftServo.setPosition(0.0);
@@ -164,16 +164,13 @@ public class BlueRight_OBJ extends LinearOpMode {
         int newFrontTarget;
         int newBackTarget;
         
-        double comp = 0;
         
-        comp = rightInches/3; 
-
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
             newLeftTarget = left.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = right.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH) + (int)(comp * COUNTS_PER_INCH);
+            newRightTarget = right.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
             newBackTarget = back.getCurrentPosition() + (int)(backInches * COUNTS_PER_INCH);
             newFrontTarget = front.getCurrentPosition() + (int)(frontInches * COUNTS_PER_INCH);
 
