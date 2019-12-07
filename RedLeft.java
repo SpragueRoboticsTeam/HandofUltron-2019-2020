@@ -87,10 +87,10 @@ public class RedLeft_OBJ extends LinearOpMode {
         waitForStart();
 //***********************************************************************************************************
 //***********************************************************************************************************
-//***********************************************************************************************************
+//*******Red Left****************************************************************************************************
 
         ClawDown(true);
-        encoderDrive(DRIVE_SPEED,   28, 28, 0, 0);  // drive to blocks
+        encoderDrive(DRIVE_SPEED,   25.5, 27, 0, 0);  // drive to blocks
         //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
         Color.RGBToHSV((int) (platCS.red() * SCALE_FACTOR), (int) (platCS.green() * SCALE_FACTOR), (int) (platCS.blue() * SCALE_FACTOR), HSVD);
         telemetry.addData("Red: ",platCS.red());
@@ -101,28 +101,28 @@ public class RedLeft_OBJ extends LinearOpMode {
         rightServo.setPosition(0.0);
         sleep(500);
 
-        encoderDrive(DRIVE_SPEED, -15,-15 ,0, 0);
-        encoderTurn(DRIVE_SPEED, 25);
+        encoderDrive(DRIVE_SPEED, -12,-13 ,0, 0);
+        //encoderTurn(DRIVE_SPEED, 25);
 
-        encoderDrive(DRIVE_SPEED, 0,0 ,-40, -40); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,-45.5, -45); //+ distance --> left
 
         leftServo.setPosition(0.0); //1st up
         rightServo.setPosition(1.0);
         sleep(300);
 
-        encoderDrive(DRIVE_SPEED, -5,-5,0, 0);
-       // encoderTurn(DRIVE_SPEED, 10);
-        encoderDrive(DRIVE_SPEED, 0,0 ,47, 47); //- distance --> right
+        encoderDrive(DRIVE_SPEED, -5,-6,0, 0);
         //encoderTurn(DRIVE_SPEED, 10);
+        encoderDrive(DRIVE_SPEED, 0,0 ,49, 49); //- distance --> right
+        encoderTurn(DRIVE_SPEED, 25);
 
-        encoderDrive(DRIVE_SPEED, 14, 14,0, 0);
+        encoderDrive(DRIVE_SPEED, 14, 15,0, 0);
 
         leftServo.setPosition(1.0);//2nd down
         rightServo.setPosition(0.0);
         sleep(500);
 
-        encoderDrive(DRIVE_SPEED, -10,-10 ,0, 0);
-        encoderDrive(DRIVE_SPEED, 0,0 ,-52, -52); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, -10,-11 ,0, 0);
+        encoderDrive(DRIVE_SPEED, 0,0 ,-62, -62); //+ distance --> left
         
         leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);
@@ -130,20 +130,9 @@ public class RedLeft_OBJ extends LinearOpMode {
         
         //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
         
-        encoderDrive(DRIVE_SPEED, 0,0, 18, 18); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,28, 28); //+ distance --> left
 
-
-        /*
-        encoderDrive(DRIVE_SPEED, -25,25,0, 0);
-        encoderDrive(DRIVE_SPEED, -5,-5 ,0, 0);
-        encoderDrive(TURN_SPEED, -25,25,0, 0);
-        encoderDrive(DRIVE_SPEED, -5,-5 ,0, 0);*/
-
-
-       /* leftServo.setPosition(0);
-        rightServo.setPosition(1);
-        sleep(2000);
-        encoderDrive(DRIVE_SPEED, 0, 0, -50, -50);*/
+       
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
