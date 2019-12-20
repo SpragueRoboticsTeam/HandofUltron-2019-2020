@@ -130,7 +130,7 @@ public class RedLeft_OBJ extends LinearOpMode {
         
         //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
         
-        encoderDrive(DRIVE_SPEED, 0,0 ,28, 28); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,27, 27); //+ distance --> left
 
        
 
