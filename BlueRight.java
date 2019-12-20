@@ -104,7 +104,7 @@ public class BlueRight_OBJ extends LinearOpMode {
         encoderDrive(DRIVE_SPEED, -12,-13 ,0, 0);
         encoderTurn(DRIVE_SPEED, 25);
 
-        encoderDrive(DRIVE_SPEED, 0,0 ,-35.5, -35); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,35.5, 35); //+ distance --> left
 
         leftServo.setPosition(0.0); //1st up
         rightServo.setPosition(1.0);
@@ -112,7 +112,7 @@ public class BlueRight_OBJ extends LinearOpMode {
 
         encoderDrive(DRIVE_SPEED, -5,-6,0, 0);
         //encoderTurn(DRIVE_SPEED, 10);
-        encoderDrive(DRIVE_SPEED, 0,0 ,45, 45); //- distance --> right
+        encoderDrive(DRIVE_SPEED, 0,0 ,-45, -45); //- distance --> right
         encoderTurn(DRIVE_SPEED, 25);
 
         encoderDrive(DRIVE_SPEED, 14, 15,0, 0);
@@ -122,7 +122,7 @@ public class BlueRight_OBJ extends LinearOpMode {
         sleep(500);
 
         encoderDrive(DRIVE_SPEED, -10,-11 ,0, 0);
-        encoderDrive(DRIVE_SPEED, 0,0 ,-52, -52); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,52, 52); //+ distance --> left
         
         leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);
@@ -130,7 +130,7 @@ public class BlueRight_OBJ extends LinearOpMode {
         
         //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
         
-        encoderDrive(DRIVE_SPEED, 0,0 ,18, 18); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 ,-18, -18); //+ distance --> left
 
 
         /*
