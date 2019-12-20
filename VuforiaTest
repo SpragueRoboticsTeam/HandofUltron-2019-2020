@@ -25,14 +25,14 @@ import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.ERROR;
 
 @Autonomous
 //@Disabled
-public class VuforiaTest extends LinearOpMode {
+public class TenserflowTest extends LinearOpMode {
 
     /****************************** constants **************************/
     /****************************** constants **************************/
 
     private static final String TFOD_MODEL_ASSET     = "Skystone.tflite";
     private static final String LABEL_SKYSTONE   = "Skystone";
-   // private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+    private static final String LABEL_PLATFORM = "Platform";
 
     private static final int SCREEN_WIDTH        = 1280;
     private static final int SCREEN_HEIGHT       =  720;
@@ -166,7 +166,7 @@ public class VuforiaTest extends LinearOpMode {
                     "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
             myTfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, myVuforia);
-            myTfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_SKYSTONE);
+            myTfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_SKYSTONE, LABEL_PLATFORM);
 
             if (myTfod != null) {
                 myTfod.activate();
@@ -219,7 +219,7 @@ public class VuforiaTest extends LinearOpMode {
             telemetry.addData("State: ", "Target Stone");
             //telemetry.update();
             for (Recognition recognition : updatedRecognitions) {
-                if (recognition.getLabel().equals(LABEL_SKYSTONE)) {
+                if (recognition.getLabel().equals(LABEL_PLATFORM)) {
                     stone = recognition;
                     break;
                 }
@@ -342,3 +342,4 @@ public class VuforiaTest extends LinearOpMode {
         telemetry.update();
     }
 }
+
