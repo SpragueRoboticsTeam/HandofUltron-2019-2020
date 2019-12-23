@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Array;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -49,7 +50,7 @@ public class TenserflowTest extends LinearOpMode {
     private static final int POINTING_TOLERANCE  =   50;
 
     private static final double LOW_POWER        = 0.15;
-    private static final double MID_SPEED        = 0.25;
+    private static final double SPEED        = 0.75;
     private static final int CLICKS_TO_TARGET    =  5000;
 
     private static final int COUNTS_PER_ROTATION = 1680;
@@ -120,6 +121,7 @@ public class TenserflowTest extends LinearOpMode {
                     targetStone();
                     break;
                 case MOVE_STONE:
+                    encoderDrive(SPEED, 0, 0, 5, 5);
                     moveToStone();
                     break;
                 case DONE:
@@ -249,8 +251,12 @@ public class TenserflowTest extends LinearOpMode {
     //****************************** targetGold *************************
     //****************************** targetGold  ************************
     // Turn the robot to face the gold mineral
-    private void targetStone () {
+    private boolean[] targetStone () {
         targetsSkyStone.activate();
+        boolean left = false;
+        boolean mid = false;
+        boolean right = false;
+        
         while (!isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.
@@ -279,7 +285,22 @@ public class TenserflowTest extends LinearOpMode {
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-                myRobotState = MOVE_STONE;
+                
+                if (stone != null) {
+                int goldMineralLeftX = (int) stone.getLeft();
+                int goldMineralRightX = (int) stone.getRight();
+                int goldMineralCenterX = (goldMineralLeftX + goldMineralRightX) / 2;
+                int error = goldMineralCenterX - SCREEN_WIDTH / 2;
+
+                if (Math.abs(error) < POINTING_TOLERANCE) {
+                    myRobotState = MOVE_STONE;
+                } else {
+                    telemetry.addData("Action: ", "Move " + error);
+                    telemetry.update();
+                    int turn_clicks = error / 8;
+                    moveFor(0, turn_clicks);
+                }
+     
             }
             else {
                 telemetry.addData("Visible Target", "none");
@@ -289,6 +310,8 @@ public class TenserflowTest extends LinearOpMode {
 
         // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
+        
+        return new boolean[] {left,mid,right};
     }
 
     /****************************** moveToGold *************************/
@@ -298,7 +321,7 @@ public class TenserflowTest extends LinearOpMode {
         telemetry.addData("State: ", "Moving to Gold");
         telemetry.update();
 
-        moveFor(CLICKS_TO_TARGET, 0);
+        encoderDrive(SPEED, 15, 15, 0, 0);
 
         myRobotState = DONE;
     }
@@ -310,31 +333,76 @@ public class TenserflowTest extends LinearOpMode {
     // if the leftCount is less than the right count the robot will turn left
     // if the rightCount is less than the left count the robot will turn right
 
-    private void moveFor (int leftCount, int frontCount){
-        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        
-        left.setTargetPosition(leftCount);
-        right.setTargetPosition(leftCount);
-        front.setTargetPosition(frontCount);
-        back.setTargetPosition(frontCount);
-        
-        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
-        front.setPower(MID_SPEED);
-        back.setPower(MID_SPEED);
-        left.setPower(MID_SPEED);
-        right.setPower(MID_SPEED);
+    public void encoderDrive(double speed,
+                             double leftInches, double rightInches, double frontInches, double backInches) {
+        int newLeftTarget;
+        int newRightTarget;
+        int newFrontTarget;
+        int newBackTarget;
         
         
-        while (opModeIsActive() && (left.isBusy() || front.isBusy())) {
-            idle();
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = left.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newRightTarget = right.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newBackTarget = back.getCurrentPosition() + (int)(backInches * COUNTS_PER_INCH);
+            newFrontTarget = front.getCurrentPosition() + (int)(frontInches * COUNTS_PER_INCH);
+
+            left.setTargetPosition(newLeftTarget);
+            right.setTargetPosition(newRightTarget);
+            front.setTargetPosition(newFrontTarget);
+            back.setTargetPosition(newBackTarget);
+
+            // Turn On RUN_TO_POSITION
+            left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+
+            left.setPower(Math.abs(speed));
+            right.setPower(Math.abs(speed));
+            front.setPower(Math.abs(speed));
+            back.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+
+                    (left.isBusy() || right.isBusy() || front.isBusy() || back.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d :%7d: %7d", newLeftTarget,  newRightTarget, newFrontTarget, newBackTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d :%7d: %7d",
+                        left.getCurrentPosition(),
+                        right.getCurrentPosition(),
+                        front.getCurrentPosition(),
+                        back.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            left.setPower(0);
+            right.setPower(0);
+            front.setPower(0);
+            back.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
         }
+
     }
 
 
