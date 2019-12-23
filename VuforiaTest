@@ -290,14 +290,25 @@ public class TenserflowTest extends LinearOpMode {
                 int goldMineralLeftX = (int) stone.getLeft();
                 int goldMineralRightX = (int) stone.getRight();
                 int goldMineralCenterX = (goldMineralLeftX + goldMineralRightX) / 2;
-                int error = goldMineralCenterX - SCREEN_WIDTH / 2;
+                int error = goldMineralCenterX - SCREEN_WIDTH / 2; 
+                // don't know whether to add or subtract the ofset value of camera.
 
                 if (Math.abs(error) < POINTING_TOLERANCE) {
                     myRobotState = MOVE_STONE;
-                } else {
+                    mid = true;
+                } 
+                else {
                     telemetry.addData("Action: ", "Move " + error);
                     telemetry.update();
                     int turn_clicks = error / 8;
+                    
+                    if(turn_clicks > 0 ){
+                        left = true;
+                    }
+                    else{
+                        right = true;
+                    }
+                    
                     moveFor(0, turn_clicks);
                 }
      
