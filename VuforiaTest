@@ -98,6 +98,12 @@ public class TenserflowTest extends LinearOpMode {
     private DcMotor right = null;
     private DcMotor front = null;
     private DcMotor back = null;
+    
+    private DcMotor claw = null;
+    private DcMotor lift = null;
+    private Servo leftServo = null;
+    private Servo rightServo = null;
+
 
     /****************************** runOpMode **************************/
     /****************************** runOpMode **************************/
@@ -237,6 +243,11 @@ public class TenserflowTest extends LinearOpMode {
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
         
+        claw = hardwareMap.get(DcMotor.class, "C");
+        lift = hardwareMap.get(DcMotor.class, "S");
+        leftServo = hardwareMap.get(Servo.class, "LS");
+        rightServo = hardwareMap.get(Servo.class, "RS");
+        
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -246,6 +257,9 @@ public class TenserflowTest extends LinearOpMode {
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        
+        leftServo.setPosition(0.0);
+        rightServo.setPosition(1.0);
     }
 
     //****************************** targetGold *************************
