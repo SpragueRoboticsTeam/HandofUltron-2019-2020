@@ -2,6 +2,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -20,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Array;
+import java.util.Arrays;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -36,7 +38,7 @@ import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.ERROR;
 
 @Autonomous
 //@Disabled
-public class TenserflowTest extends LinearOpMode {
+public class VuforiaTest extends LinearOpMode {
 
     /****************************** constants **************************/
     /****************************** constants **************************/
@@ -68,6 +70,8 @@ public class TenserflowTest extends LinearOpMode {
         TEST,
         ERROR,
     }
+    
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
 
     // This Vuforia key 
     private static final String VUFORIA_KEY = "AX4M/dD/////AAABmUcl5rwrykPPpKQ5zGFa4i4Mt6RmvlkzAWjZ99prH3RkdPikfcTNKFpbQGxVbBIel351SzwQEWfbmvOe/llFF2UlXs8RiUvyQVJM0MuP0LXyPWMgh0uBiltCUHbSvlCtJZRGUNbonluWFeGxr+0gMXqcww10l+rD5hGZc8V6OnzJCyihEhkRCKs/LcS8bDap3Z6hGwoaGbxtyNXzTJY9pL+KsK9qBOG6mhKb7bu8xulebK5qy5j+0Wuc1lkExsLBa4eHgUYS1rtEIuabhCnE4/QBObTCZR/rfMOQ0BGKBOg4b6x2lavidOBkG+glccve7/1SV/gdAksgO0Sw+XUYT3qOOINQKtxjZfn7LLWjqzaW";
@@ -140,8 +144,7 @@ public class TenserflowTest extends LinearOpMode {
                     shutdown();
                     break;
                 case TEST:
-                    moveFor(200,200);
-                    moveFor(-200, 200);
+                    encoderDrive(SPEED, 0, 0, 15, 15);
                     myRobotState = DONE;
                     break;
                 case ERROR:
@@ -181,9 +184,10 @@ public class TenserflowTest extends LinearOpMode {
 
     private void initVuforia() {
     
-    
+    int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+  
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
+        
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = CameraDirection.BACK;
 
@@ -204,7 +208,7 @@ public class TenserflowTest extends LinearOpMode {
         phoneXRotate = 90;
         
         
-        }
+        
 
     }
 
@@ -318,7 +322,7 @@ public class TenserflowTest extends LinearOpMode {
                         right = true;
                     }
                     
-                    moveFor(0, turn_clicks);
+                    encoderDrive(SPEED, 0, 0, turn_clicks, turn_clicks);
                 }
      
             }
@@ -328,6 +332,7 @@ public class TenserflowTest extends LinearOpMode {
             telemetry.update();
         }
 
+        }
         // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
         
@@ -353,8 +358,7 @@ public class TenserflowTest extends LinearOpMode {
     // if the leftCount is less than the right count the robot will turn left
     // if the rightCount is less than the left count the robot will turn right
 
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches, double frontInches, double backInches) {
+    public void encoderDrive(double speed, double leftInches, double rightInches, double frontInches, double backInches) {
         int newLeftTarget;
         int newRightTarget;
         int newFrontTarget;
