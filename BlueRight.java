@@ -44,10 +44,10 @@ public class BlueRight_OBJ extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        left = hardwareMap.get(DcMotor.class, "L");
-        right = hardwareMap.get(DcMotor.class, "R");
-        front = hardwareMap.get(DcMotor.class, "F");
-        back = hardwareMap.get(DcMotor.class, "B");
+        left = hardwareMap.get(DcMotor.class, "B");
+        right = hardwareMap.get(DcMotor.class, "F");
+        front = hardwareMap.get(DcMotor.class, "L");
+        back = hardwareMap.get(DcMotor.class, "R");
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
         frontCS = hardwareMap.get(ColorSensor.class, "FCS");
@@ -73,11 +73,13 @@ public class BlueRight_OBJ extends LinearOpMode {
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         
 
         // Send telemetry message to indicate successful Encoder reset
@@ -90,15 +92,15 @@ public class BlueRight_OBJ extends LinearOpMode {
 //*******Blue Right****************************************************************************************************
 
         ClawDown(true);
-        encoderDrive(DRIVE_SPEED,   30.5, 32, 0, 0);  // drive to blocks
-        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        encoderDrive(DRIVE_SPEED,   35.5, 37, 0, 0);  // drive to blocks
         Color.RGBToHSV((int) (platCS.red() * SCALE_FACTOR), (int) (platCS.green() * SCALE_FACTOR), (int) (platCS.blue() * SCALE_FACTOR), HSVD);
         telemetry.addData("Red: ",platCS.red());
         //if(platCS.red){}
         //encoderTurn(DRIVE_SPEED, 10);
 
-        leftServo.setPosition(1.0);//down
-        rightServo.setPosition(0.0);
+       /* leftServo.setPosition(1.0);//down
+        rightServo.setPosition(0.0);*/
+        ClawDown(false); 
         sleep(500);
 
         encoderDrive(DRIVE_SPEED, -12,-13 ,0, 0);
@@ -106,8 +108,9 @@ public class BlueRight_OBJ extends LinearOpMode {
 
         encoderDrive(DRIVE_SPEED, 0,0 ,35.5, 35); //+ distance --> left
 
-        leftServo.setPosition(0.0); //1st up
-        rightServo.setPosition(1.0);
+        /*leftServo.setPosition(0.0); //1st up
+        rightServo.setPosition(1.0);*/
+        ClawUp();
         sleep(300);
 
         encoderDrive(DRIVE_SPEED, -5,-6,0, 0);
@@ -117,15 +120,17 @@ public class BlueRight_OBJ extends LinearOpMode {
 
         encoderDrive(DRIVE_SPEED, 14, 15,0, 0);
 
-        leftServo.setPosition(1.0);//2nd down
-        rightServo.setPosition(0.0);
+        /*leftServo.setPosition(1.0);//2nd down
+        rightServo.setPosition(0.0);*/
+        ClawDown(false);
         sleep(500);
 
         encoderDrive(DRIVE_SPEED, -10,-11 ,0, 0);
         encoderDrive(DRIVE_SPEED, 0,0 ,52, 52); //+ distance --> left
         
-        leftServo.setPosition(0.0);
-        rightServo.setPosition(1.0);
+       /* leftServo.setPosition(0.0);
+        rightServo.setPosition(1.0);*/
+        ClawUp();
         sleep(300);
         
         //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
@@ -327,8 +332,8 @@ public class BlueRight_OBJ extends LinearOpMode {
         lift.setPower(0);
 
     }
-    
-   public void ClawDown(boolean beginning) {
+
+    public void ClawDown(boolean beginning) {
         if(beginning) {
             claw.setPower(1);
             sleep(350);
@@ -341,47 +346,33 @@ public class BlueRight_OBJ extends LinearOpMode {
             claw.setPower(-0.1);
         }
     }
-    
+
     public void ClawUp() {
         claw.setPower(1);
         sleep(250);
         claw.setPower(0.1);
     }
     
-    public void liftMove(boolean up){
+    public void liftMove(int pos){
         
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-            if(up){
-                lift.setTargetPosition(1500);
-                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift.setPower(1);
-            }
+            lift.setTargetPosition(pos);      
             
-            else{
-                lift.setTargetPosition(500);
-                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift.setPower(-1);
-            }
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             
+            lift.setPower(1);
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
+            while (opModeIsActive() && lift.isBusy())) {
 
-                    (left.isBusy() || right.isBusy() || front.isBusy() || back.isBusy())) {
-
+                // Display it for the driver.
                 idle();
-                
             }
 
-            // Stop all motion;
-            lift.setPower(0);
             
+            lift.setPower(0);
+
+
 
             // Turn off RUN_TO_POSITION
             lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
