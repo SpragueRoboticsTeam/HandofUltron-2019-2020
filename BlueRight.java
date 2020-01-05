@@ -336,10 +336,8 @@ public class BlueRight extends LinearOpMode {
     public void ClawDown(boolean beginning) {
         if(beginning) {
             claw.setPower(1);
-            sleep(350);
-            claw.setPower(-1);
-            sleep(250);
-            claw.setPower(-0.1);
+            sleep (500);
+            claw.setPower(0);
         } else {
             claw.setPower(-1);
             sleep(250);
