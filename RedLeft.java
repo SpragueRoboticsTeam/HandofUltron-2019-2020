@@ -44,10 +44,10 @@ public class RedLeft_OBJ extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        left = hardwareMap.get(DcMotor.class, "L");
-        right = hardwareMap.get(DcMotor.class, "R");
-        front = hardwareMap.get(DcMotor.class, "F");
-        back = hardwareMap.get(DcMotor.class, "B");
+        left = hardwareMap.get(DcMotor.class, "B");
+        right = hardwareMap.get(DcMotor.class, "F");
+        front = hardwareMap.get(DcMotor.class, "L");
+        back = hardwareMap.get(DcMotor.class, "R");
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
         frontCS = hardwareMap.get(ColorSensor.class, "FCS");
@@ -57,10 +57,10 @@ public class RedLeft_OBJ extends LinearOpMode {
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
 
-        left.setDirection(DcMotor.Direction.FORWARD);
-        right.setDirection(DcMotor.Direction.REVERSE);
-        front.setDirection(DcMotor.Direction.FORWARD);
-        back.setDirection(DcMotor.Direction.REVERSE);
+        left.setDirection(DcMotor.Direction.REVERSE);
+        right.setDirection(DcMotor.Direction.FORWARD);
+        front.setDirection(DcMotor.Direction.REVERSE);
+        back.setDirection(DcMotor.Direction.FORWARD);
 
         leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);
