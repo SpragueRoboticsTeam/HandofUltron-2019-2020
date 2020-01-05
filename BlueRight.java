@@ -91,7 +91,7 @@ public class BlueRight extends LinearOpMode {
 //***********************************************************************************************************
 //*******Blue Right****************************************************************************************************
 
-        ClawDown(true);
+        //ClawDown(true);
         encoderDrive(DRIVE_SPEED,   35.5, 37, 0, 0);  // drive to blocks
         Color.RGBToHSV((int) (platCS.red() * SCALE_FACTOR), (int) (platCS.green() * SCALE_FACTOR), (int) (platCS.blue() * SCALE_FACTOR), HSVD);
         telemetry.addData("Red: ",platCS.red());
@@ -100,7 +100,7 @@ public class BlueRight extends LinearOpMode {
 
        /* leftServo.setPosition(1.0);//down
         rightServo.setPosition(0.0);*/
-        ClawDown(false); 
+        ClawDown(true); 
         sleep(500);
 
         encoderDrive(DRIVE_SPEED, -12,-13 ,0, 0);
