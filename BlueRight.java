@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Autonomous
-public class BlueRight_OBJ extends LinearOpMode {
+public class BlueRight extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
