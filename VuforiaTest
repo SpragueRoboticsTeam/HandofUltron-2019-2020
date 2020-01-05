@@ -1,18 +1,16 @@
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
@@ -30,11 +28,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
 // I don't understand why this is necessary
-import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.DONE;
-import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.MOVE_STONE;
-import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.TARGET_STONE;
-import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.TEST;
-import static org.firstinspires.ftc.teamcode.VuforiaTest.RobotState.ERROR;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 @Autonomous
 //@Disabled
@@ -70,28 +64,28 @@ public class VuforiaTest extends LinearOpMode {
         TEST,
         ERROR,
     }
-    
+
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
 
     // This Vuforia key 
     private static final String VUFORIA_KEY = "AX4M/dD/////AAABmUcl5rwrykPPpKQ5zGFa4i4Mt6RmvlkzAWjZ99prH3RkdPikfcTNKFpbQGxVbBIel351SzwQEWfbmvOe/llFF2UlXs8RiUvyQVJM0MuP0LXyPWMgh0uBiltCUHbSvlCtJZRGUNbonluWFeGxr+0gMXqcww10l+rD5hGZc8V6OnzJCyihEhkRCKs/LcS8bDap3Z6hGwoaGbxtyNXzTJY9pL+KsK9qBOG6mhKb7bu8xulebK5qy5j+0Wuc1lkExsLBa4eHgUYS1rtEIuabhCnE4/QBObTCZR/rfMOQ0BGKBOg4b6x2lavidOBkG+glccve7/1SV/gdAksgO0Sw+XUYT3qOOINQKtxjZfn7LLWjqzaW";
-    
+
     private static final float mmPerInch        = 25.4f;
     private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
     // Constant for Stone Target
     private static final float stoneZ = 2.00f * mmPerInch;
-    
+
     /****************************** member variables *******************/
     /****************************** member variables *******************/
 
     // Stores the apps execution state
     // private RobotState myRobotState = TEST;
-    private RobotState myRobotState = TARGET_STONE;
+    private RobotState myRobotState = RobotState.TARGET_STONE;
 
     // The Vuforia localization engine.
     private VuforiaLocalizer myVuforia = null;
-    
+
     // Class Members
     private OpenGLMatrix lastLocation = null;
     private VuforiaLocalizer vuforia = null;
@@ -108,7 +102,7 @@ public class VuforiaTest extends LinearOpMode {
     private DcMotor right = null;
     private DcMotor front = null;
     private DcMotor back = null;
-    
+
     private DcMotor claw = null;
     private DcMotor lift = null;
     private Servo leftServo = null;
@@ -134,7 +128,7 @@ public class VuforiaTest extends LinearOpMode {
 
             switch (myRobotState) {
                 case TARGET_STONE:
-                    targetStone();
+                   // targetStone(stoneTarget);
                     break;
                 case MOVE_STONE:
                     encoderDrive(SPEED, 0, 0, 5, 5);
@@ -145,14 +139,14 @@ public class VuforiaTest extends LinearOpMode {
                     break;
                 case TEST:
                     encoderDrive(SPEED, 0, 0, 15, 15);
-                    myRobotState = DONE;
+                    myRobotState = RobotState.DONE;
                     break;
                 case ERROR:
-                    myRobotState = DONE;
+                    myRobotState = RobotState.DONE;
                     break;
                 default: {
                     telemetry.addData("Error", "This program should never be here");
-                    myRobotState = ERROR;
+                    myRobotState = RobotState.ERROR;
                 }
             }
         }
@@ -165,13 +159,9 @@ public class VuforiaTest extends LinearOpMode {
 
     private void initRobot() {
 
-        initVuforia();
+       // stoneTarget = initVuforia();
 
-        if (myRobotState != ERROR) {
-            cameraStuff();
-        }
-
-        if (myRobotState != ERROR) {
+        if (myRobotState != RobotState.ERROR) {
             initMotors();
         }
         // Tell the driver that initialization is complete.
@@ -182,54 +172,47 @@ public class VuforiaTest extends LinearOpMode {
     // Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
     // Configure the phone to use the rear camera.
 
-    private void initVuforia() {
-    
-    int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-  
+    private VuforiaTrackable initVuforia() {
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        
+
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
+        parameters.cameraDirection = BACK;
 
         //  Instantiate the Vuforia engine
         myVuforia = ClassFactory.getInstance().createVuforia(parameters);
-        
+
         VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
 
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
         stoneTarget.setName("Stone Target");
 
         if (myVuforia == null){
-            myRobotState = ERROR;
+            myRobotState = RobotState.ERROR;
             telemetry.addData("ERROR", "the Vuforia engine did not initialize");
         }
-        
-        phoneYRotate = -90;
-        phoneXRotate = 90;
-        
-        
-        
-
-    }
 
     // Initialize the camera stuff.
-    private void cameraStuff(){
+
         phoneYRotate = -90;
         phoneXRotate = 90;
-        
-        
+
+
         final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
         final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
         final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
-        
+
         OpenGLMatrix robotFromCamera = OpenGLMatrix
-                    .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
 
         //  Let all the trackable listeners know where the phone is.  
-        ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+        ((VuforiaTrackableDefaultListener) stoneTarget.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+        return stoneTarget;
     }
-    
+
 
     // ********** initMotors helper
     //Initialize the drive motors.
@@ -241,12 +224,12 @@ public class VuforiaTest extends LinearOpMode {
         right = hardwareMap.get(DcMotor.class, "R");
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
-        
+
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
-        
+
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -256,7 +239,7 @@ public class VuforiaTest extends LinearOpMode {
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+
         leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);
     }
@@ -264,29 +247,29 @@ public class VuforiaTest extends LinearOpMode {
     //****************************** targetGold *************************
     //****************************** targetGold  ************************
     // Turn the robot to face the gold mineral
-    private boolean[] targetStone () {
-        targetsSkyStone.activate();
+    private boolean[] targetStone ( VuforiaTrackable stoneTarget) {
+       // targetsSkyStone.activate();
         boolean left = false;
         boolean mid = false;
         boolean right = false;
-        
+
         while (!isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.
-            
-             if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                    telemetry.addData("Visible Target", trackable.getName());
-                    targetVisible = true;
 
-                    // getUpdatedRobotLocation() will return null if no new information is available since
-                    // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                    if (robotLocationTransform != null) {
-                        lastLocation = robotLocationTransform;
-                    }
-                    break;
-                
-               }
+          /*  if (((VuforiaTrackableDefaultListener)stoneTarget.getListener()).isVisible()) {
+                telemetry.addData("Visible Target", stoneTarget.getName());
+                targetVisible = true;
+
+                // getUpdatedRobotLocation() will return null if no new information is available since
+                // the last time that call was made, or if the trackable is not currently visible.
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
+                }
+                break;
+
+            }*/
 
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
@@ -298,45 +281,45 @@ public class VuforiaTest extends LinearOpMode {
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-                
-                if (stone != null) {
-                int goldMineralLeftX = (int) stone.getLeft();
-                int goldMineralRightX = (int) stone.getRight();
-                int goldMineralCenterX = (goldMineralLeftX + goldMineralRightX) / 2;
-                int error = goldMineralCenterX - SCREEN_WIDTH / 2; 
-                // don't know whether to add or subtract the ofset value of camera.
 
-                if (Math.abs(error) < POINTING_TOLERANCE) {
-                    myRobotState = MOVE_STONE;
-                    mid = true;
-                } 
-                else {
-                    telemetry.addData("Action: ", "Move " + error);
-                    telemetry.update();
-                    int turn_clicks = error / 8;
-                    
-                    if(turn_clicks > 0 ){
-                        left = true;
+              /*  if (stone != null) {
+                    int goldMineralLeftX = (int) stone.getLeft();
+                    int goldMineralRightX = (int) stone.getRight();
+                    int goldMineralCenterX = (goldMineralLeftX + goldMineralRightX) / 2;
+                    int error = goldMineralCenterX - SCREEN_WIDTH / 2;
+                    // don't know whether to add or subtract the ofset value of camera.
+
+                    if (Math.abs(error) < POINTING_TOLERANCE) {
+                        myRobotState = RobotState.MOVE_STONE;
+                        mid = true;
                     }
-                    else{
-                        right = true;
+                    else {
+                        telemetry.addData("Action: ", "Move " + error);
+                        telemetry.update();
+                        int turn_clicks = error / 8;
+
+                        if(turn_clicks > 0 ){
+                            left = true;
+                        }
+                        else{
+                            right = true;
+                        }
+
+                        encoderDrive(SPEED, 0, 0, turn_clicks, turn_clicks);
                     }
-                    
-                    encoderDrive(SPEED, 0, 0, turn_clicks, turn_clicks);
+
                 }
-     
+                else {
+                    telemetry.addData("Visible Target", "none");
+                }
+                telemetry.update();*/
             }
-            else {
-                telemetry.addData("Visible Target", "none");
-            }
-            telemetry.update();
-        }
 
         }
         // Disable Tracking when we are done;
-        targetsSkyStone.deactivate();
-        
-        return new boolean[] {left,mid,right};
+      //  targetsSkyStone.deactivate();
+
+        return new boolean[] {left, right};
     }
 
     /****************************** moveToGold *************************/
@@ -348,7 +331,7 @@ public class VuforiaTest extends LinearOpMode {
 
         encoderDrive(SPEED, 15, 15, 0, 0);
 
-        myRobotState = DONE;
+        myRobotState = RobotState.DONE;
     }
 
     // ********** moveFor helper
@@ -363,8 +346,8 @@ public class VuforiaTest extends LinearOpMode {
         int newRightTarget;
         int newFrontTarget;
         int newBackTarget;
-        
-        
+
+
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
@@ -476,4 +459,3 @@ public class VuforiaTest extends LinearOpMode {
         telemetry.update();
     }
 }
-
