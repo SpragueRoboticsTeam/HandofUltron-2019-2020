@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -50,7 +51,7 @@ public class BlueRight extends LinearOpMode {
         back = hardwareMap.get(DcMotor.class, "R");
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
-        
+
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
 
@@ -58,6 +59,7 @@ public class BlueRight extends LinearOpMode {
         right.setDirection(DcMotor.Direction.FORWARD);
         front.setDirection(DcMotor.Direction.REVERSE);
         back.setDirection(DcMotor.Direction.FORWARD);
+        lift.setDirection(DcMotor.Direction.REVERSE);
 
         leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);
@@ -77,7 +79,7 @@ public class BlueRight extends LinearOpMode {
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addLine("Make sure right edge of motors is on right squiggle");
@@ -90,25 +92,24 @@ public class BlueRight extends LinearOpMode {
 
         //ClawDown(true);
         liftMove(2000);
-        encoderDrive(DRIVE_SPEED,   35.5, 37, 0, 0);  // drive to blocks
-        Color.RGBToHSV((int) (platCS.red() * SCALE_FACTOR), (int) (platCS.green() * SCALE_FACTOR), (int) (platCS.blue() * SCALE_FACTOR), HSVD);
-        telemetry.addData("Red: ",platCS.red());
+        encoderDrive(DRIVE_SPEED,   32, 32, 0, 0);  // drive to blocks
+       // telemetry.addData("Red: ",platCS.red());
         //if(platCS.red){}
-        //encoderTurn(DRIVE_SPEED, 10);
+        encoderTurn(DRIVE_SPEED, 10);
 
        /* leftServo.setPosition(1.0);//down
         rightServo.setPosition(0.0);*/
-        
-        encoderDrive(DRIVE_SPEED, 0, 0, -8, -8); // Moves forward to get to legos
+
         liftMove(250);
         ClawDown(true);
+        sleep(50);
         liftMove(1200);
-        //sleep(500);
 
-        encoderDrive(DRIVE_SPEED, -12,-13 ,0, 0);
-        encoderTurn(DRIVE_SPEED, 25);
 
-        encoderDrive(DRIVE_SPEED, 0,0 ,35.5, 35); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, -12,-12 ,0, 0);
+        encoderTurn(DRIVE_SPEED, 15);
+
+        encoderDrive(DRIVE_SPEED, 0,0 ,40, 42); //+ distance --> left
 
         /*leftServo.setPosition(0.0); //1st up
         rightServo.setPosition(1.0);*/
@@ -116,33 +117,34 @@ public class BlueRight extends LinearOpMode {
         ClawUp();
         //sleep(300);
 
-        encoderDrive(DRIVE_SPEED, -5,-6,0, 0);
+        encoderDrive(DRIVE_SPEED, -5,-5,0, 0);
         //encoderTurn(DRIVE_SPEED, 10);
-        encoderDrive(DRIVE_SPEED, 0,0 ,-45, -45); //- distance --> right
-        encoderTurn(DRIVE_SPEED, 25);
+        encoderDrive(DRIVE_SPEED, 0,0 ,-45, -47); //- distance --> right
+        //encoderTurn(DRIVE_SPEED, 25);
         liftMove(2000);
-        encoderDrive(DRIVE_SPEED, 14, 15,0, 0);
+        encoderDrive(DRIVE_SPEED, 14, 14,0, 0);
 
         /*leftServo.setPosition(1.0);//2nd down
         rightServo.setPosition(0.0);*/
-        
+
         liftMove(250);
         ClawDown(false);
+        sleep(50);
         liftMove(1200);
-        sleep(500);
 
-        encoderDrive(DRIVE_SPEED, -10,-11 ,0, 0);
-        encoderDrive(DRIVE_SPEED, 0,0 ,52, 52); //+ distance --> left
-        
+
+        encoderDrive(DRIVE_SPEED, -10,-10 ,0, 0);
+        encoderDrive(DRIVE_SPEED, 0,0 ,52, 54); //+ distance --> left
+
        /* leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);*/
         liftMove(500);
         ClawUp();
-       // sleep(300);
-        
+        // sleep(300);
+
         //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
-        
-        encoderDrive(DRIVE_SPEED, 0,0 ,-18, -18); //+ distance --> left
+
+        encoderDrive(DRIVE_SPEED, 0,0 ,-18, -20); //+ distance --> left
 
 
         /*
@@ -175,8 +177,8 @@ public class BlueRight extends LinearOpMode {
         int newRightTarget;
         int newFrontTarget;
         int newBackTarget;
-        
-        
+
+
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
@@ -309,9 +311,9 @@ public class BlueRight extends LinearOpMode {
         telemetry.update();
         sleep(100);
     }
-    
+
     public void encoderClawlift(double speed,
-                             double clawInches, double liftInches) {
+                                double clawInches, double liftInches) {
         int newClawTarget;
         int newLiftTarget;
 
@@ -343,8 +345,10 @@ public class BlueRight extends LinearOpMode {
     public void ClawDown(boolean beginning) {
         if(beginning) {
             claw.setPower(1);
-            sleep (500);
-            claw.setPower(0);
+            sleep(350);
+            claw.setPower(-1);
+            sleep(250);
+            claw.setPower(-0.1);
         } else {
             claw.setPower(-1);
             sleep(250);
@@ -357,9 +361,9 @@ public class BlueRight extends LinearOpMode {
         sleep(250);
         claw.setPower(0.1);
     }
-    
+
     public void liftMove(int pos){
-        
+
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
             lift.setTargetPosition(pos);
@@ -368,7 +372,7 @@ public class BlueRight extends LinearOpMode {
 
             lift.setPower(1);
 
-            while (opModeIsActive() && lift.isBusy())) {
+            while (opModeIsActive() && lift.isBusy()) {
 
                 // Display it for the driver.
                 idle();
@@ -386,4 +390,3 @@ public class BlueRight extends LinearOpMode {
         }
     }
 }
-
