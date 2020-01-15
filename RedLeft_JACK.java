@@ -58,7 +58,7 @@ public class RedLeft_JACK extends LinearOpMode {
         left.setDirection(DcMotor.Direction.REVERSE);
         right.setDirection(DcMotor.Direction.FORWARD);
         front.setDirection(DcMotor.Direction.REVERSE);
-        back.setDirection(DcMotor.Direction.REVERSE);
+        back.setDirection(DcMotor.Direction.FORWARD);
         lift.setDirection(DcMotor.Direction.REVERSE);
 
         leftServo.setPosition(0.0);
@@ -88,7 +88,7 @@ public class RedLeft_JACK extends LinearOpMode {
         waitForStart();
 //***********************************************************************************************************
 //***********************************************************************************************************
-//*******Blue Right******************************************************************************************
+//*******Red Left Jack******************************************************************************************
 
         liftMove(2000);
         encoderDrive(DRIVE_SPEED,   32, 32, 0, 0);  // drive to blocks
@@ -102,14 +102,14 @@ public class RedLeft_JACK extends LinearOpMode {
         encoderDrive(DRIVE_SPEED, -7, -7, 0, 0);
 
 
-        encoderDrive(DRIVE_SPEED, 0, 0, 40, 40); //+ distance --> right
+        encoderDrive(DRIVE_SPEED, 0, 0, -40, -40); //- distance --> right
         ClawUp();
 
         encoderDrive(DRIVE_SPEED, -5,-5, 0, 0);
-        encoderDrive(DRIVE_SPEED, 0, 0, -44, -44); //- distance --> left
-        encoderDrive(DRIVE_SPEED, 2, 0, 0, 0);
+        encoderDrive(DRIVE_SPEED, 0, 0, 46, 46); //+ distance --> left
+        //encoderDrive(DRIVE_SPEED, 2, 0, 0, 0);
         liftMove(2000);
-        encoderDrive(DRIVE_SPEED, 17, 17, 0, 0);
+        encoderDrive(DRIVE_SPEED, 14, 14, 0, 0);
 
         liftMove(250);
         ClawDown(false);
@@ -118,10 +118,10 @@ public class RedLeft_JACK extends LinearOpMode {
 
 
         encoderDrive(DRIVE_SPEED, -9, -9, 0, 0);
-        encoderDrive(DRIVE_SPEED, 0,0 ,55, 55); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 0,0 , -54, -54); //- distance --> right
         ClawUp();
 
-        encoderDrive(DRIVE_SPEED, 0, 0,-20, -20); //+ distance --> right
+        encoderDrive(DRIVE_SPEED, 0, 0, 20, 20); //+ distance --> left
         encoderDrive(DRIVE_SPEED, 5, 5, 0, 0);
 
         telemetry.addData("Path", "Complete");
