@@ -45,9 +45,9 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
     public float HSVD[] = {0f, 0f, 0f};
 
     final double SCALE_FACTOR = 255;
-    
+
     //private Legos[] legoArray = new Legos[5];
-    
+
     //thresh hold red<50 is skystone
 
     public void runOpMode() {
@@ -56,10 +56,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
         right = hardwareMap.get(DcMotor.class, "R");
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
-        frontCS = hardwareMap.get(ColorSensor.class, "FCS");
-        frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
-        platCS  = hardwareMap.get(ColorSensor.class, "PCS");
-        platDS = hardwareMap.get(DistanceSensor.class, "PDS");
+        
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
         claw = hardwareMap.get(DcMotor.class, "C");
@@ -87,7 +84,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -100,20 +97,21 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
         telemetry.update();
 
        waitForStart();
+       
         encoderDrive(DRIVE_SPEED,   0, 0, -20, -20); // Left 20 inches
-        encoderDrive(DRIVE_SPEED,   30, 30, 0, 0);
+        encoderDrive(DRIVE_SPEED,   36, 36, 0, 0);
         claw.setPower(1);
-        leftServo.setPosition(1.0);
-        rightServo.setPosition(0.0);
+        leftServo.setPosition(0.75);
+        rightServo.setPosition(0.25);
         sleep(500);
         claw.setPower(0);
-        encoderDrive(1, -30, -31, 0, 0); // S4: Backwards 25 inches at full speed
+        encoderDrive(DRIVE_SPEED, -40, -40, 0, 0); // S4: Backwards 25 inches at full speed
         leftServo.setPosition(0);
         rightServo.setPosition(1);
         sleep(200);
         encoderDrive(DRIVE_SPEED, 0, 0, 34, 34); // S6: Drive 50 inches to the right for team bridge
         //
-        encoderDrive(DRIVE_SPEED, 22, 22, 0, 0); // S7: Drive 24 inches forward towards legos
+        encoderDrive(DRIVE_SPEED, 28, 28, 0, 0); // S7: Drive 24 inches forward towards legos
         encoderDrive(DRIVE_SPEED, 0, 0, 42, 42);
         encoderTurn(DRIVE_SPEED, 76); // S8: Rotate 90 degrees clockwise to face lego
         liftMove(2000);
@@ -343,4 +341,4 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
         sleep(250);
         claw.setPower(0.1);
     }
-} 
+}
