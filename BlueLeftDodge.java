@@ -98,41 +98,42 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
 
        waitForStart();
        
-        encoderDrive(DRIVE_SPEED,   0, 0, -20, -20); // Left 20 inches
-        encoderDrive(DRIVE_SPEED,   36, 36, 0, 0);
-        claw.setPower(1);
-        leftServo.setPosition(0.75);
-        rightServo.setPosition(0.25);
+        liftMove(1900);
+        encoderDrive(DRIVE_SPEED,   -20, -20 , 0, 0 ); // Left 20 inches
+        encoderDrive(DRIVE_SPEED,   0, 0, -36, -36); //forward to platform
+        liftMove(600); //moves lift down
+        
+        claw.setPower(1);  //puts claw down
         sleep(500);
         claw.setPower(0);
-        encoderDrive(DRIVE_SPEED, -40, -40, 0, 0); // S4: Backwards 25 inches at full speed
-        leftServo.setPosition(0);
-        rightServo.setPosition(1);
-        sleep(200);
-        encoderDrive(DRIVE_SPEED, 0, 0, 34, 34); // S6: Drive 50 inches to the right for team bridge
-        //
-        encoderDrive(DRIVE_SPEED, 28, 28, 0, 0); // S7: Drive 24 inches forward towards legos
-        encoderDrive(DRIVE_SPEED, 0, 0, 42, 42);
-        encoderTurn(DRIVE_SPEED, 76); // S8: Rotate 90 degrees clockwise to face lego
-        liftMove(2000);
+        
+        encoderDrive(DRIVE_SPEED,  0, 0 , 40, 40); // S4: Backwards to wall
+        liftMove(1500); //raises lift off of platform
+        
+        encoderDrive(DRIVE_SPEED, 34, 34 , 0, 0 ); // S6: Drive to the right for team bridge
+        
+        encoderDrive(DRIVE_SPEED, 0, 0 , -25, -25); // S7: Drive forward dodging other robot
+        encoderDrive(DRIVE_SPEED,  44, 44 , 0 , 0); //finishes moving right toward blocks
+    
+        //liftMove(2000);
         encoderDrive(DRIVE_SPEED, 0, 0, -8, -8); // Moves forward to get to legos
         liftMove(250); 
-        /*
-        encoderDrive(DRIVE_SPEED, 30, 30, 0, 0);
-        liftMove(2000);
-        encoderTurn(DRIVE_SPEED, 76);
-        liftMove(250);
-        */
         ClawDown(false);
         liftMove(1200);
         encoderTurn(DRIVE_SPEED, -105);
-        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
         /*
-        liftMove(3500);
-        encoderDrive(DRIVE_SPEED, 0, 0, -10, -10); 
-        */
+        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
         ClawUp(); 
         encoderDrive(DRIVE_SPEED, 0, 0, 20, 20); 
+        */
+        
+        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
+        liftMove(2000);
+        encoderDrive(DRIVE_SPEED, 0, 0, -3, -3);
+        ClawUp(); 
+        encoderDrive(DRIVE_SPEED, 0, 0, 30, 30); 
+        
+        
         telemetry.addData("Path", "Complete");
         telemetry.update();
         
