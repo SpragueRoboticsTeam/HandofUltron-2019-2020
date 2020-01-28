@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,14 +8,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/*class BLegos {
-    public float HSV[] = {0f, 0f, 0f};
-    public boolean isThere = true;
-    public float distance = 0;
-}
-*/
 @Autonomous
-public class BlueLeftDodge_OBJ extends LinearOpMode {
+public class BlueLeftDodge extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -25,8 +19,8 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 1.0;
     static final double     TURN_SPEED              = 0.5;
-    
-    
+
+
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -56,7 +50,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
         right = hardwareMap.get(DcMotor.class, "R");
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
-        
+
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
         claw = hardwareMap.get(DcMotor.class, "C");
@@ -96,47 +90,37 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
                 back.getCurrentPosition());
         telemetry.update();
 
-       waitForStart();
-       
+        waitForStart();
+
         liftMove(1900);
         encoderDrive(DRIVE_SPEED,   -20, -20 , 0, 0 ); // Left 20 inches
         encoderDrive(DRIVE_SPEED,   0, 0, -36, -36); //forward to platform
         liftMove(600); //moves lift down
-        
+
         claw.setPower(1);  //puts claw down
         sleep(500);
         claw.setPower(0);
-        
-        encoderDrive(DRIVE_SPEED,  0, 0 , 40, 40); // S4: Backwards to wall
+
+        encoderDrive(DRIVE_SPEED,  0, 0 , 39, 39); // S4: Backwards to wall
         liftMove(1500); //raises lift off of platform
-        
+
         encoderDrive(DRIVE_SPEED, 34, 34 , 0, 0 ); // S6: Drive to the right for team bridge
-        
-        encoderDrive(DRIVE_SPEED, 0, 0 , -25, -25); // S7: Drive forward dodging other robot
-        encoderDrive(DRIVE_SPEED,  44, 44 , 0 , 0); //finishes moving right toward blocks
-    
-        //liftMove(2000);
-        encoderDrive(DRIVE_SPEED, 0, 0, -8, -8); // Moves forward to get to legos
-        liftMove(250); 
+
+        encoderDrive(DRIVE_SPEED, 0, 0 , -23, -23); // S7: Drive forward dodging other robot
+        encoderDrive(DRIVE_SPEED,  47, 47 , 0 , 0); //finishes moving right toward blocks
+        encoderDrive(DRIVE_SPEED, 0, 0, -11, -11); // Moves forward to get to legos
+        liftMove(250);
         ClawDown(false);
         liftMove(1200);
-        encoderTurn(DRIVE_SPEED, -105);
-        /*
-        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
-        ClawUp(); 
-        encoderDrive(DRIVE_SPEED, 0, 0, 20, 20); 
-        */
-        
-        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
-        liftMove(2000);
-        encoderDrive(DRIVE_SPEED, 0, 0, -3, -3);
-        ClawUp(); 
-        encoderDrive(DRIVE_SPEED, 0, 0, 30, 30); 
-        
-        
+        encoderTurn(DRIVE_SPEED, -103);
+
+        encoderDrive(DRIVE_SPEED, 0, 0, -30, -30);
+        ClawUp();
+        encoderDrive(DRIVE_SPEED, 0, 0, 5, 5);
+
         telemetry.addData("Path", "Complete");
         telemetry.update();
-        
+
     }
 
     /*
@@ -199,7 +183,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
                         back.getCurrentPosition());
                 telemetry.update();
                 idle();
-                
+
             }
 
             // Stop all motion;
@@ -217,17 +201,17 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
             //  sleep(250);   // optional pause after each move
         }
     }
-    
+
     public void liftMove(int idk){
-        
+
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-            
-                lift.setTargetPosition(idk);
-                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift.setPower(1);
-            
-            
+
+            lift.setTargetPosition(idk);
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift.setPower(1);
+
+
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -238,12 +222,12 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
             while (opModeIsActive() && (lift.isBusy())) {
 
                 idle();
-                
+
             }
 
             // Stop all motion;
             lift.setPower(0);
-            
+
 
             // Turn off RUN_TO_POSITION
             lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -302,7 +286,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
 
         while (opModeIsActive() && (left.isBusy() && right.isBusy())) {
             idle();
-            
+
         }
 
         // Turn off RUN_TO_POSITION
@@ -322,7 +306,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
         sleep(100);
 
     }
-    
+
     public void ClawDown(boolean beginning) {
         if(beginning) {
             claw.setPower(1);
@@ -336,7 +320,7 @@ public class BlueLeftDodge_OBJ extends LinearOpMode {
             claw.setPower(-0.1);
         }
     }
-    
+
     public void ClawUp() {
         claw.setPower(1);
         sleep(250);
