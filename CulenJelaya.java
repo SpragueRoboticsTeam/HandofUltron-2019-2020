@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @TeleOp
-public class CulenJelaya_OBJ extends LinearOpMode{
+public class CulenJelaya extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor left = null;
@@ -24,10 +24,10 @@ public class CulenJelaya_OBJ extends LinearOpMode{
     private DcMotor back = null;
     private DcMotor claw = null;
     private DcMotor lift = null;
-   // private ColorSensor platformCS = null;
-    private ColorSensor frontCS = null;
-   // private DistanceSensor platformDS = null;
-    private DistanceSensor frontDS = null;
+    // private ColorSensor platformCS = null;
+    //private ColorSensor frontCS = null;
+    // private DistanceSensor platformDS = null;
+    //private DistanceSensor frontDS = null;
     private Servo leftServo = null;
     private Servo rightServo = null;
 
@@ -51,9 +51,9 @@ public class CulenJelaya_OBJ extends LinearOpMode{
         //RBLF
 
         //platformCS = hardwareMap.get(ColorSensor.class, "PCS");
-        frontCS = hardwareMap.get(ColorSensor.class, "FCS");
-        frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
-       // platformDS = hardwareMap.get(DistanceSensor.class, "PCS");
+      //  frontCS = hardwareMap.get(ColorSensor.class, "FCS");
+       // frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
+        // platformDS = hardwareMap.get(DistanceSensor.class, "PCS");
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
 
@@ -69,21 +69,17 @@ public class CulenJelaya_OBJ extends LinearOpMode{
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift.setTargetPosition(0);
-        //lift.setPower(.5);
-        
-        leftServo.setPosition(0);
-        rightServo.setPosition(1);
+
 
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
 
-            Color.RGBToHSV((int) (frontCS.red() * SCALE_FACTOR), (int) (frontCS.green() * SCALE_FACTOR), (int) (frontCS.blue() * SCALE_FACTOR), HSVF);
+          //  Color.RGBToHSV((int) (frontCS.red() * SCALE_FACTOR), (int) (frontCS.green() * SCALE_FACTOR), (int) (frontCS.blue() * SCALE_FACTOR), HSVF);
 
             if(gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
                 left.setPower(gamepad1.left_stick_y);
@@ -123,10 +119,10 @@ public class CulenJelaya_OBJ extends LinearOpMode{
             }
 
             if(gamepad2.y){
-                claw.setPower(0.35);
+                claw.setPower(0.45);
             }
             else if(gamepad2.a){
-                claw.setPower(-0.35);
+                claw.setPower(-0.45);
             }
             else{
                 claw.setPower(0);
@@ -135,8 +131,8 @@ public class CulenJelaya_OBJ extends LinearOpMode{
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData( "lift: " , lift.getCurrentPosition());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", gamepad1.left_stick_y, gamepad1.right_stick_x);
-            telemetry.addData("Distance", frontDS.getDistance(DistanceUnit.INCH));
-            telemetry.addData("Color", frontCS.blue());
+           // telemetry.addData("Distance", frontDS.getDistance(DistanceUnit.INCH));
+           // telemetry.addData("Color", frontCS.blue());
             telemetry.update();
         }
     }
