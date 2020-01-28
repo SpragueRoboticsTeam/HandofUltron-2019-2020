@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,14 +8,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/*class BLegos {
-    public float HSV[] = {0f, 0f, 0f};
-    public boolean isThere = true;
-    public float distance = 0;
-}
-*/
 @Autonomous
-public class BlueLeft_OBJnew extends LinearOpMode {
+public class BlueLeft extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -25,8 +19,8 @@ public class BlueLeft_OBJnew extends LinearOpMode {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 1.0;
     static final double     TURN_SPEED              = 0.5;
-    
-    
+
+
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -45,9 +39,9 @@ public class BlueLeft_OBJnew extends LinearOpMode {
     public float HSVD[] = {0f, 0f, 0f};
 
     final double SCALE_FACTOR = 255;
-    
+
     //private Legos[] legoArray = new Legos[5];
-    
+
     //thresh hold red<50 is skystone
 
     public void runOpMode() {
@@ -56,10 +50,7 @@ public class BlueLeft_OBJnew extends LinearOpMode {
         right = hardwareMap.get(DcMotor.class, "R");
         front = hardwareMap.get(DcMotor.class, "F");
         back = hardwareMap.get(DcMotor.class, "B");
-        frontCS = hardwareMap.get(ColorSensor.class, "FCS");
-        frontDS = hardwareMap.get(DistanceSensor.class, "FDS");
-        platCS  = hardwareMap.get(ColorSensor.class, "PCS");
-        platDS = hardwareMap.get(DistanceSensor.class, "PDS");
+
         leftServo = hardwareMap.get(Servo.class, "LS");
         rightServo = hardwareMap.get(Servo.class, "RS");
         claw = hardwareMap.get(DcMotor.class, "C");
@@ -87,7 +78,7 @@ public class BlueLeft_OBJnew extends LinearOpMode {
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -99,35 +90,25 @@ public class BlueLeft_OBJnew extends LinearOpMode {
                 back.getCurrentPosition());
         telemetry.update();
 
-       waitForStart();
-        encoderDrive(DRIVE_SPEED,   0, 0, -20, -20); // Left 20 inches
-        encoderDrive(DRIVE_SPEED,   30, 30, 0, 0);
-        claw.setPower(1);
-        leftServo.setPosition(1.0);
-        rightServo.setPosition(0.0);
+        waitForStart();
+
+        liftMove(1900);
+        encoderDrive(DRIVE_SPEED,   -20, -20 , 0, 0 ); // Left 20 inches
+        encoderDrive(DRIVE_SPEED,   0, 0, -36, -36); //forward to platform
+        liftMove(600); //moves lift down
+
+        claw.setPower(1);  //puts claw down
         sleep(500);
         claw.setPower(0);
-        encoderDrive(1, -30, -31, 0, 0); // S4: Backwards 25 inches at full speed
-        leftServo.setPosition(0);
-        rightServo.setPosition(1);
-        sleep(200);
-        encoderDrive(DRIVE_SPEED, 0, 0, 76, 76); // S6: Drive 50 inches to the right for team bridge
-        //
-        encoderDrive(DRIVE_SPEED, 22, 22, 0, 0); // S7: Drive 24 inches forward towards legos
-        encoderTurn(DRIVE_SPEED, 76); // S8: Rotate 90 degrees clockwise to face lego
-        liftMove(2000);
-        encoderDrive(DRIVE_SPEED, 0, 0, -8, -8); // Moves forward to get to legos
-        liftMove(250); 
-        ClawDown(false);
-        liftMove(1200);
-        encoderTurn(DRIVE_SPEED, -76);
-        encoderDrive(DRIVE_SPEED, -22, -22, 0, 0);
-        encoderDrive(DRIVE_SPEED, 0, 0, -50, -50);
-        ClawUp(); 
-        encoderDrive(DRIVE_SPEED, 0, 0, 10, 10); 
+
+        encoderDrive(DRIVE_SPEED,  0, 0 , 37, 37); // S4: Backwards to wall
+        liftMove(1500); //raises lift off of platform
+
+        encoderDrive(DRIVE_SPEED, 50, 50 , 0, 0 ); // S6: Drive to the right for team bridge
+
         telemetry.addData("Path", "Complete");
         telemetry.update();
-        
+
     }
 
     /*
@@ -190,7 +171,7 @@ public class BlueLeft_OBJnew extends LinearOpMode {
                         back.getCurrentPosition());
                 telemetry.update();
                 idle();
-                
+
             }
 
             // Stop all motion;
@@ -208,17 +189,17 @@ public class BlueLeft_OBJnew extends LinearOpMode {
             //  sleep(250);   // optional pause after each move
         }
     }
-    
+
     public void liftMove(int idk){
-        
+
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-            
-                lift.setTargetPosition(idk);
-                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift.setPower(1);
-            
-            
+
+            lift.setTargetPosition(idk);
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lift.setPower(1);
+
+
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -229,12 +210,12 @@ public class BlueLeft_OBJnew extends LinearOpMode {
             while (opModeIsActive() && (lift.isBusy())) {
 
                 idle();
-                
+
             }
 
             // Stop all motion;
             lift.setPower(0);
-            
+
 
             // Turn off RUN_TO_POSITION
             lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -293,7 +274,7 @@ public class BlueLeft_OBJnew extends LinearOpMode {
 
         while (opModeIsActive() && (left.isBusy() && right.isBusy())) {
             idle();
-            
+
         }
 
         // Turn off RUN_TO_POSITION
@@ -313,7 +294,7 @@ public class BlueLeft_OBJnew extends LinearOpMode {
         sleep(100);
 
     }
-    
+
     public void ClawDown(boolean beginning) {
         if(beginning) {
             claw.setPower(1);
@@ -327,11 +308,10 @@ public class BlueLeft_OBJnew extends LinearOpMode {
             claw.setPower(-0.1);
         }
     }
-    
+
     public void ClawUp() {
         claw.setPower(1);
         sleep(250);
         claw.setPower(0.1);
     }
-    
-} 
+}
