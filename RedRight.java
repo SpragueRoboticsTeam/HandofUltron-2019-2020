@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,12 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-/*class RLegos {
-    public float HSV[] = {0f, 0f, 0f};
-    public boolean isThere = true;
-    public float distance = 0;
-} */
 
 @Autonomous
 public class RedRight extends LinearOpMode {
@@ -64,15 +58,15 @@ public class RedRight extends LinearOpMode {
 
         left.setDirection(DcMotor.Direction.FORWARD);
         right.setDirection(DcMotor.Direction.REVERSE);
-        front.setDirection(DcMotor.Direction.FORWARD);
-        back.setDirection(DcMotor.Direction.REVERSE);
+        front.setDirection(DcMotor.Direction.REVERSE);
+        back.setDirection(DcMotor.Direction.FORWARD);
         lift.setDirection(DcMotor.Direction.REVERSE);
 
         leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");
+        telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -97,32 +91,20 @@ public class RedRight extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        encoderDrive(DRIVE_SPEED,   0, 0, -21, -21); // Right 20 inches
-        encoderDrive(DRIVE_SPEED,   43, 45, 0, 0); // Forward towards platform
-        claw.setPower(1); // Initializes claw
-        leftServo.setPosition(1.0); // Puts servos down on platform
-        rightServo.setPosition(0.0);
-        sleep(500); // Gives time to allow servos to move
-        claw.setPower(0); // Stops claw so it isn't running forever
-        encoderDrive(DRIVE_SPEED,    35, -35, -45, 45); // S4: Backwards 45 inches at full speed
-        leftServo.setPosition(0); // Releases platform
-        rightServo.setPosition(1);
-        sleep(200); // Gives servos time
 
+        liftMove(1900);
+        encoderDrive(DRIVE_SPEED,   22, 22 , 0, 0 ); // Right 20 inches
+        encoderDrive(DRIVE_SPEED,   0, 0, -36, -36); //forward to platform
+        liftMove(600); //moves lift down
 
-        encoderDrive(DRIVE_SPEED, -75, -75, 0, 0); // S6: Drive 80 inches to the right for team bridge
-        encoderTurn(DRIVE_SPEED, -76); // S8: Rotate (what's supposed to be) 90 degrees clockwise to face lego
-        encoderDrive(DRIVE_SPEED, 22, 22, 0, 0); // S7: Drive 22 inches forward towards legos
-        liftMove(2000); // Moves lift so it doesn't collide with lego on following step
-        encoderDrive(DRIVE_SPEED, 0, 0, 8, 8); // Moves  8 inches forward (technically to the left because of orientation change) to get to legos
-        ClawDown(false); // Captures lego with claw
-        liftMove(1200); // Lifts lego up so it doesn't drag on the ground
+        claw.setPower(1);  //puts claw down
+        sleep(500);
+        claw.setPower(0);
 
+        encoderDrive(DRIVE_SPEED,  0, 0 , 38, 37); // S4: Backwards to wall
+        liftMove(1750); //raises lift off of platform
 
-        encoderTurn(DRIVE_SPEED, 105); // Turns towards alliance bridge
-        encoderDrive(DRIVE_SPEED, 0, 0, 39, 39); // Drives 39 inches forward past alliance bridge
-        ClawUp(); // Releases lego
-        encoderDrive(DRIVE_SPEED, 0, 0, -20, -20); // Drives back onto Alliance bridge
+        encoderDrive(DRIVE_SPEED, -50, -50 , 0, 0 ); // S6: Drive to the left for team bridge
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
@@ -180,6 +162,13 @@ public class RedRight extends LinearOpMode {
                     (left.isBusy() || right.isBusy() || front.isBusy() || back.isBusy())) {
 
                 // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d :%7d: %7d", newLeftTarget,  newRightTarget, newFrontTarget, newBackTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d :%7d: %7d",
+                        left.getCurrentPosition(),
+                        right.getCurrentPosition(),
+                        front.getCurrentPosition(),
+                        back.getCurrentPosition());
+                telemetry.update();
                 idle();
 
             }
@@ -237,9 +226,6 @@ public class RedRight extends LinearOpMode {
     public void encoderTurn (  double speed, double angle) {
         telemetry.addData("Degrees: ", angle);
 
-        front.setDirection(DcMotor.Direction.REVERSE);
-        back.setDirection(DcMotor.Direction.FORWARD);
-
         double fullRotation = 1680 * 3;
         double turnFract = 360 / Math.abs(angle);
         telemetry.addData("turn fraction: ", turnFract);
@@ -280,13 +266,10 @@ public class RedRight extends LinearOpMode {
         }
 
 
-        left.setPower(Math.abs(speed));
-        right.setPower(Math.abs(speed));
-        front.setPower(Math.abs(speed));
-        back.setPower(Math.abs(speed));
-
-        front.setDirection(DcMotor.Direction.FORWARD);
-        back.setDirection(DcMotor.Direction.REVERSE);
+        left.setPower(speed);
+        right.setPower(speed);
+        front.setPower(speed);
+        back.setPower(speed);
 
         while (opModeIsActive() && (left.isBusy() && right.isBusy())) {
             idle();
@@ -304,7 +287,6 @@ public class RedRight extends LinearOpMode {
         right.setPower(0);
         front.setPower(0);
         back.setPower(0);
-
 
         telemetry.addData("turn", "complete");
         telemetry.update();
