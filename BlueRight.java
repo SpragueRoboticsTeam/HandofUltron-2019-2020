@@ -20,8 +20,8 @@ public class BlueRight extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.9;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     DRIVE_SPEED             = 1;
+    static final double     TURN_SPEED              = 0.85;
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -51,17 +51,11 @@ public class BlueRight extends LinearOpMode {
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
 
-        leftServo = hardwareMap.get(Servo.class, "LS");
-        rightServo = hardwareMap.get(Servo.class, "RS");
-
         left.setDirection(DcMotor.Direction.REVERSE);
         right.setDirection(DcMotor.Direction.FORWARD);
         front.setDirection(DcMotor.Direction.REVERSE);
         back.setDirection(DcMotor.Direction.FORWARD);
         lift.setDirection(DcMotor.Direction.REVERSE);
-
-        leftServo.setPosition(0.0);
-        rightServo.setPosition(1.0);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");
@@ -99,16 +93,19 @@ public class BlueRight extends LinearOpMode {
 
 
         encoderDrive(DRIVE_SPEED, -7, -7, 0, 0);
-        encoderDrive(DRIVE_SPEED, 1, 0, 0, 0);
+        //encoderDrive(DRIVE_SPEED, 1, 0, 0, 0);
 
-        encoderDrive(DRIVE_SPEED, 0,0 ,40, 40); //+ distance --> left
+        encoderTurn(TURN_SPEED, 90);
+
+        encoderDrive(DRIVE_SPEED, 40,40 ,0, 0); //+ distance --> left
 
         ClawUp();
 
-        encoderDrive(DRIVE_SPEED, -5,-5, 0, 0);
-        encoderDrive(DRIVE_SPEED, 0, 0,-47, -47); //- distance --> right
+        //encoderDrive(DRIVE_SPEED, -5,-5, 0, 0);
+        encoderDrive(DRIVE_SPEED, -47, -47,0, 0); //- distance --> right
         liftMove(2000);
-        encoderDrive(DRIVE_SPEED, 13, 13, 0, 0);
+        encoderTurn(TURN_SPEED, -90);
+        encoderDrive(DRIVE_SPEED, 8, 8, 0, 0);
 
         liftMove(250);
         ClawDown(false);
@@ -117,11 +114,12 @@ public class BlueRight extends LinearOpMode {
 
 
         encoderDrive(DRIVE_SPEED, -7, -7, 0, 0);
-        encoderDrive(DRIVE_SPEED, 0,0 ,54, 54); //+ distance --> left
+        encoderTurn(TURN_SPEED, 90);
+        encoderDrive(DRIVE_SPEED, 54,54,0, 0); //+ distance --> left
         ClawUp();
 
-        encoderDrive(DRIVE_SPEED, 0, 0,-20, -20); //+ distance --> right
-        encoderDrive(DRIVE_SPEED, 2, 2, 0, 0);
+        encoderDrive(DRIVE_SPEED, -20, -20,0, 0); //+ distance --> right
+        //encoderDrive(DRIVE_SPEED, 2, 2, 0, 0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
