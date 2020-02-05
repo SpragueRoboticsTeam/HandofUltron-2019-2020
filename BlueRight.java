@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Autonomous
-public class BlueRight extends LinearOpMode {
+public class BlueRight_OBJ extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -95,16 +95,16 @@ public class BlueRight extends LinearOpMode {
         encoderDrive(DRIVE_SPEED, -7, -7, 0, 0);
         //encoderDrive(DRIVE_SPEED, 1, 0, 0, 0);
 
-        encoderTurn(TURN_SPEED, 90);
+        encoderTurn(TURN_SPEED, 110);
 
         encoderDrive(DRIVE_SPEED, 40,40 ,0, 0); //+ distance --> left
 
         ClawUp();
 
         //encoderDrive(DRIVE_SPEED, -5,-5, 0, 0);
-        encoderDrive(DRIVE_SPEED, -47, -47,0, 0); //- distance --> right
+        encoderDrive(DRIVE_SPEED, -47, -48,0, 0); //- distance --> right
         liftMove(2000);
-        encoderTurn(TURN_SPEED, -90);
+        encoderTurn(TURN_SPEED, -80);
         encoderDrive(DRIVE_SPEED, 8, 8, 0, 0);
 
         liftMove(250);
@@ -114,7 +114,7 @@ public class BlueRight extends LinearOpMode {
 
 
         encoderDrive(DRIVE_SPEED, -7, -7, 0, 0);
-        encoderTurn(TURN_SPEED, 90);
+        encoderTurn(TURN_SPEED, 110);
         encoderDrive(DRIVE_SPEED, 54,54,0, 0); //+ distance --> left
         ClawUp();
 
