@@ -22,7 +22,7 @@ public class RedLeft extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.9;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     TURN_SPEED              = 0.85;
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -101,19 +101,20 @@ public class RedLeft extends LinearOpMode {
 
 
         encoderDrive(DRIVE_SPEED, -12,-12 ,0, 0);
-        encoderTurn(DRIVE_SPEED, -80);
+        encoderTurn(TURN_SPEED, -80);
 
-        encoderDrive(DRIVE_SPEED, -40, -42, 0,0 ); //+ distance --> left
+        encoderDrive(DRIVE_SPEED, 40, 42, 0,0 ); //+ distance --> left
 
         ClawUp();
         //sleep(300);
 
         //encoderDrive(DRIVE_SPEED, -5,-5,0, 0);
-        encoderTurn(DRIVE_SPEED, 10);
+        //encoderTurn(DRIVE_SPEED, 10);
         encoderDrive(DRIVE_SPEED, 45, 47, 0, 0); //- distance --> right
+        encoderTurn(TURN_SPEED, 110);
         
         liftMove(2000);
-        encoderTurn(DRIVE_SPEED, 110);
+        
         encoderDrive(DRIVE_SPEED, 15, 15,0, 0);
 
         /*leftServo.setPosition(1.0);//2nd down
@@ -126,7 +127,9 @@ public class RedLeft extends LinearOpMode {
 
 
         encoderDrive(DRIVE_SPEED, -10,-10 ,0, 0);
-        encoderDrive(DRIVE_SPEED, 0,0 ,-52, -54); //+ distance --> left
+        
+        encoderTurn(TURN_SPEED, -80);
+        encoderDrive(DRIVE_SPEED, 52, 54, 0, 0); //+ distance --> left
 
        /* leftServo.setPosition(0.0);
         rightServo.setPosition(1.0);*/
