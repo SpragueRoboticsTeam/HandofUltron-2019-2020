@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
@@ -21,8 +21,8 @@ public class RedLeft extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 1;
-    static final double     TURN_SPEED              = 0.85;
+    static final double     DRIVE_SPEED             = 0.9;
+    static final double     TURN_SPEED              = 0.5;
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -32,7 +32,7 @@ public class RedLeft extends LinearOpMode {
     private DcMotor lift = null;
     private ColorSensor frontCS = null;
     private DistanceSensor frontDS = null;
-    private ColorSensor platCS = null;
+    private ColorSensor platCS = null;      //Parker Was here!
     private DistanceSensor platDS = null;
     private Servo leftServo = null;
     private Servo rightServo = null;
@@ -52,15 +52,20 @@ public class RedLeft extends LinearOpMode {
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
 
+        leftServo = hardwareMap.get(Servo.class, "LS");
+        rightServo = hardwareMap.get(Servo.class, "RS");
+
         left.setDirection(DcMotor.Direction.REVERSE);
         right.setDirection(DcMotor.Direction.FORWARD);
         front.setDirection(DcMotor.Direction.REVERSE);
         back.setDirection(DcMotor.Direction.FORWARD);
         lift.setDirection(DcMotor.Direction.REVERSE);
 
+        leftServo.setPosition(0.0);
+        rightServo.setPosition(1.0);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");
+        telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -83,29 +88,36 @@ public class RedLeft extends LinearOpMode {
         waitForStart();
 //***********************************************************************************************************
 //***********************************************************************************************************
-//*******Red Left Jack******************************************************************************************
+//******* Red Left ****************************************************************************************************
 
+        //ClawDown(true);
         liftMove(2000);
         encoderDrive(DRIVE_SPEED,   32, 32, 0, 0);  // drive to blocks
-
+       
         liftMove(250);
         ClawDown(true);
         sleep(50);
         liftMove(1200);
 
 
-        encoderDrive(DRIVE_SPEED, -7, -7, 0, 0);
+        encoderDrive(DRIVE_SPEED, -12,-12 ,0, 0);
+        encoderTurn(DRIVE_SPEED, -80);
 
-        encoderTurn(TURN_SPEED, -90);
-        encoderDrive(DRIVE_SPEED, 40, 40, 0, 0); //- distance --> right
+        encoderDrive(DRIVE_SPEED, -40, -42, 0,0 ); //+ distance --> left
+
         ClawUp();
+        //sleep(300);
 
-       // encoderDrive(DRIVE_SPEED, -5,-5, 0, 0);
-        encoderDrive(DRIVE_SPEED, -47, -47, 0, 0); //+ distance --> left
-        //encoderDrive(DRIVE_SPEED, 2, 0, 0, 0);
+        //encoderDrive(DRIVE_SPEED, -5,-5,0, 0);
+        encoderTurn(DRIVE_SPEED, 10);
+        encoderDrive(DRIVE_SPEED, 45, 47, 0, 0); //- distance --> right
+        
         liftMove(2000);
-        encoderTurn(TURN_SPEED, 90);
-        encoderDrive(DRIVE_SPEED, 9, 9, 0, 0);
+        encoderTurn(DRIVE_SPEED, 110);
+        encoderDrive(DRIVE_SPEED, 15, 15,0, 0);
+
+        /*leftServo.setPosition(1.0);//2nd down
+        rightServo.setPosition(0.0);*/
 
         liftMove(250);
         ClawDown(false);
@@ -113,13 +125,31 @@ public class RedLeft extends LinearOpMode {
         liftMove(1200);
 
 
-        encoderDrive(DRIVE_SPEED, -9, -9, 0, 0);
-        encoderTurn(TURN_SPEED, -90);
-        encoderDrive(DRIVE_SPEED, 54,54 , 0, 0); //- distance --> right
-        ClawUp();
+        encoderDrive(DRIVE_SPEED, -10,-10 ,0, 0);
+        encoderDrive(DRIVE_SPEED, 0,0 ,-52, -54); //+ distance --> left
 
-        encoderDrive(DRIVE_SPEED, -20, -20, 0, 0); //+ distance --> left
-        //encoderDrive(DRIVE_SPEED, 5, 5, 0, 0);
+       /* leftServo.setPosition(0.0);
+        rightServo.setPosition(1.0);*/
+        //liftMove(500);
+        ClawUp();
+        // sleep(300);
+
+        //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
+
+        encoderDrive(DRIVE_SPEED,18, 20, 0, 0); //+ distance --> left
+
+
+        /*
+        encoderDrive(DRIVE_SPEED, -25,25,0, 0);
+        encoderDrive(DRIVE_SPEED, -5,-5 ,0, 0);
+        encoderDrive(TURN_SPEED, -25,25,0, 0);
+        encoderDrive(DRIVE_SPEED, -5,-5 ,0, 0);*/
+
+
+       /* leftServo.setPosition(0);
+        rightServo.setPosition(1);
+        sleep(2000);
+        encoderDrive(DRIVE_SPEED, 0, 0, -50, -50);*/
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -274,7 +304,7 @@ public class RedLeft extends LinearOpMode {
         sleep(100);
     }
 
-
+    
     public void ClawDown(boolean beginning) {
         if(beginning) {
             claw.setPower(1);
