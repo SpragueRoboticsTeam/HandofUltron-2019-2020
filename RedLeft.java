@@ -1,19 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
+/*class BLegos {
+    public float HSV[] = {0f, 0f, 0f};
+    public boolean isThere = true;
+    public float distance = 0;
+}
+*/
 @Autonomous
-public class RedLeft extends LinearOpMode {
+public class BlueLeftDodge_OBJ extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -21,8 +23,10 @@ public class RedLeft extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.9;
-    static final double     TURN_SPEED              = 0.85;
+    static final double     DRIVE_SPEED             = 1.0;
+    static final double     TURN_SPEED              = 0.5;
+    
+    
 
     private DcMotor left = null;
     private DcMotor right = null;
@@ -32,7 +36,7 @@ public class RedLeft extends LinearOpMode {
     private DcMotor lift = null;
     private ColorSensor frontCS = null;
     private DistanceSensor frontDS = null;
-    private ColorSensor platCS = null;      //Parker Was here!
+    private ColorSensor platCS = null;
     private DistanceSensor platDS = null;
     private Servo leftServo = null;
     private Servo rightServo = null;
@@ -42,27 +46,28 @@ public class RedLeft extends LinearOpMode {
 
     final double SCALE_FACTOR = 255;
 
-    @Override
+    //private Legos[] legoArray = new Legos[5];
+
+    //thresh hold red<50 is skystone
+
     public void runOpMode() {
 
-        left = hardwareMap.get(DcMotor.class, "B");
-        right = hardwareMap.get(DcMotor.class, "F");
-        front = hardwareMap.get(DcMotor.class, "L");
-        back = hardwareMap.get(DcMotor.class, "R");
+        left = hardwareMap.get(DcMotor.class, "L");
+        right = hardwareMap.get(DcMotor.class, "R");
+        front = hardwareMap.get(DcMotor.class, "F");
+        back = hardwareMap.get(DcMotor.class, "B");
+        
+       
         claw = hardwareMap.get(DcMotor.class, "C");
         lift = hardwareMap.get(DcMotor.class, "S");
 
-        leftServo = hardwareMap.get(Servo.class, "LS");
-        rightServo = hardwareMap.get(Servo.class, "RS");
-
-        left.setDirection(DcMotor.Direction.REVERSE);
-        right.setDirection(DcMotor.Direction.FORWARD);
+        left.setDirection(DcMotor.Direction.FORWARD);
+        right.setDirection(DcMotor.Direction.REVERSE);
         front.setDirection(DcMotor.Direction.REVERSE);
         back.setDirection(DcMotor.Direction.FORWARD);
         lift.setDirection(DcMotor.Direction.REVERSE);
 
-        leftServo.setPosition(0.0);
-        rightServo.setPosition(1.0);
+      
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -72,90 +77,64 @@ public class RedLeft extends LinearOpMode {
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addLine("Waiting for start");
+        telemetry.addData("Path0",  "Starting at %7d :%7d",
+                left.getCurrentPosition(),
+                right.getCurrentPosition(),
+                front.getCurrentPosition(),
+                back.getCurrentPosition());
         telemetry.update();
 
-        waitForStart();
-//***********************************************************************************************************
-//***********************************************************************************************************
-//******* Red Left ****************************************************************************************************
-
-        //ClawDown(true);
-        liftMove(2000);
-        encoderDrive(DRIVE_SPEED,   32, 32, 0, 0);  // drive to blocks
+       waitForStart();
        
-        liftMove(250);
-        ClawDown(true);
-        sleep(50);
-        liftMove(1200);
-
-
-        encoderDrive(DRIVE_SPEED, -12,-12 ,0, 0);
-        encoderTurn(TURN_SPEED, -80);
-
-        encoderDrive(DRIVE_SPEED, 40, 42, 0,0 ); //+ distance --> left
-
-        ClawUp();
-        //sleep(300);
-
-        //encoderDrive(DRIVE_SPEED, -5,-5,0, 0);
-        //encoderTurn(DRIVE_SPEED, 10);
-        encoderDrive(DRIVE_SPEED, 45, 47, 0, 0); //- distance --> right
-        encoderTurn(TURN_SPEED, 110);
+        liftMove(1900);
+        encoderDrive(DRIVE_SPEED,   -20, -20 , 0, 0 ); // Left 20 inches
+        encoderDrive(DRIVE_SPEED,   0, 0, -36, -36); //forward to platform
+        liftMove(600); //moves lift down
         
-        liftMove(2000);
+        claw.setPower(1);  //puts claw down
+        sleep(500);
+        claw.setPower(0);
         
-        encoderDrive(DRIVE_SPEED, 15, 15,0, 0);
-
-        /*leftServo.setPosition(1.0);//2nd down
-        rightServo.setPosition(0.0);*/
-
-        liftMove(250);
+        encoderDrive(DRIVE_SPEED,  0, 0 , 40, 40); // S4: Backwards to wall
+        liftMove(1500); //raises lift off of platform
+        
+        encoderDrive(DRIVE_SPEED, 34, 34 , 0, 0 ); // S6: Drive to the right for team bridge
+        
+        encoderDrive(DRIVE_SPEED, 0, 0 , -25, -25); // S7: Drive forward dodging other robot
+        encoderDrive(DRIVE_SPEED,  44, 44 , 0 , 0); //finishes moving right toward blocks
+    
+        //liftMove(2000);
+        encoderDrive(DRIVE_SPEED, 0, 0, -8, -8); // Moves forward to get to legos
+        liftMove(250); 
         ClawDown(false);
-        sleep(50);
         liftMove(1200);
-
-
-        encoderDrive(DRIVE_SPEED, -10,-10 ,0, 0);
+        encoderTurn(DRIVE_SPEED, -105);
         
-        encoderTurn(TURN_SPEED, -80);
-        encoderDrive(DRIVE_SPEED, 52, 54, 0, 0); //+ distance --> left
-
-       /* leftServo.setPosition(0.0);
-        rightServo.setPosition(1.0);*/
-        //liftMove(500);
-        ClawUp();
-        // sleep(300);
-
-        //encoderDrive(DRIVE_SPEED, 6,6 ,0, 0);
-
-        encoderDrive(DRIVE_SPEED,18, 20, 0, 0); //+ distance --> left
-
-
+        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
+        ClawUp(); 
+        encoderDrive(DRIVE_SPEED, 0, 0, 20, 20); 
+        
         /*
-        encoderDrive(DRIVE_SPEED, -25,25,0, 0);
-        encoderDrive(DRIVE_SPEED, -5,-5 ,0, 0);
-        encoderDrive(TURN_SPEED, -25,25,0, 0);
-        encoderDrive(DRIVE_SPEED, -5,-5 ,0, 0);*/
-
-
-       /* leftServo.setPosition(0);
-        rightServo.setPosition(1);
-        sleep(2000);
-        encoderDrive(DRIVE_SPEED, 0, 0, -50, -50);*/
-
+        encoderDrive(DRIVE_SPEED, 0, 0, -39, -39);
+        liftMove(2000);
+        encoderDrive(DRIVE_SPEED, 0, 0, -3, -3);
+        ClawUp(); 
+        encoderDrive(DRIVE_SPEED, 0, 0, 30, 30); 
+        */
+        
         telemetry.addData("Path", "Complete");
         telemetry.update();
+        
     }
 
     /*
@@ -173,7 +152,6 @@ public class RedLeft extends LinearOpMode {
         int newFrontTarget;
         int newBackTarget;
 
-
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
@@ -182,7 +160,6 @@ public class RedLeft extends LinearOpMode {
             newRightTarget = right.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
             newBackTarget = back.getCurrentPosition() + (int)(backInches * COUNTS_PER_INCH);
             newFrontTarget = front.getCurrentPosition() + (int)(frontInches * COUNTS_PER_INCH);
-
             left.setTargetPosition(newLeftTarget);
             right.setTargetPosition(newRightTarget);
             front.setTargetPosition(newFrontTarget);
@@ -219,6 +196,8 @@ public class RedLeft extends LinearOpMode {
                         front.getCurrentPosition(),
                         back.getCurrentPosition());
                 telemetry.update();
+                idle();
+                
             }
 
             // Stop all motion;
@@ -235,9 +214,41 @@ public class RedLeft extends LinearOpMode {
 
             //  sleep(250);   // optional pause after each move
         }
-
     }
+    
+    public void liftMove(int idk){
+        
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            
+                lift.setTargetPosition(idk);
+                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift.setPower(1);
+            
+            
 
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() && (lift.isBusy())) {
+
+                idle();
+                
+            }
+
+            // Stop all motion;
+            lift.setPower(0);
+            
+
+            // Turn off RUN_TO_POSITION
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
+    }
 
     public void encoderTurn (  double speed, double angle) {
         telemetry.addData("Degrees: ", angle);
@@ -263,8 +274,8 @@ public class RedLeft extends LinearOpMode {
             left.setTargetPosition(newLeftTarget);
             right.setTargetPosition(newRightTarget);
 
-            newLeftTarget = back.getCurrentPosition() + (int) countNum;
-            newRightTarget = front.getCurrentPosition() - (int) countNum;
+            newLeftTarget = back.getCurrentPosition() - (int) countNum;
+            newRightTarget = front.getCurrentPosition() + (int) countNum;
             back.setTargetPosition(newLeftTarget);
             front.setTargetPosition(newRightTarget);
         }
@@ -275,11 +286,12 @@ public class RedLeft extends LinearOpMode {
             left.setTargetPosition(newLeftTarget);
             right.setTargetPosition(newRightTarget);
 
-            newLeftTarget = back.getCurrentPosition() - (int) countNum;
-            newRightTarget = front.getCurrentPosition() + (int) countNum;
+            newLeftTarget = back.getCurrentPosition() + (int) countNum;
+            newRightTarget = front.getCurrentPosition() - (int) countNum;
             back.setTargetPosition(newLeftTarget);
             front.setTargetPosition(newRightTarget);
         }
+
 
         left.setPower(speed);
         right.setPower(speed);
@@ -287,7 +299,8 @@ public class RedLeft extends LinearOpMode {
         back.setPower(speed);
 
         while (opModeIsActive() && (left.isBusy() && right.isBusy())) {
-
+            idle();
+            
         }
 
         // Turn off RUN_TO_POSITION
@@ -305,8 +318,8 @@ public class RedLeft extends LinearOpMode {
         telemetry.addData("turn", "complete");
         telemetry.update();
         sleep(100);
-    }
 
+    }
     
     public void ClawDown(boolean beginning) {
         if(beginning) {
@@ -321,38 +334,10 @@ public class RedLeft extends LinearOpMode {
             claw.setPower(-0.1);
         }
     }
-
+    
     public void ClawUp() {
         claw.setPower(1);
         sleep(250);
-        claw.setPower(0);
-    }
-
-    public void liftMove(int pos){
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-            lift.setTargetPosition(pos);
-
-            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            lift.setPower(1);
-
-            while (opModeIsActive() && lift.isBusy()) {
-
-                // Display it for the driver.
-                idle();
-            }
-
-
-            lift.setPower(0);
-
-
-
-            // Turn off RUN_TO_POSITION
-            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            //  sleep(250);   // optional pause after each move
-        }
+        claw.setPower(0.1);
     }
 }
